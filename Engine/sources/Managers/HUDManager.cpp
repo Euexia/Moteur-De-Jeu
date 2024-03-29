@@ -3,7 +3,9 @@
 #include <stdexcept>
 #include <fstream>
 #include <algorithm>
+#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+
 
 
 // Fonction utilitaire pour charger une image depuis un fichier sur le disque
