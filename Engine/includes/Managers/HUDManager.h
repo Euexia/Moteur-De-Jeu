@@ -2,47 +2,47 @@
 #ifndef HUD_MANAGER_H
 #define HUD_MANAGER_H
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan.hpp>
 #include <vector>
 #include <string>
 
 struct HUDComponent {
     float x, y; // Position de l'élément HUD
     float width, height; // Largeur et hauteur de l'élément HUD
-    VkImage texture; // Image Vulkan de l'élément HUD
-    VkImageView imageView; // Vue de l'image Vulkan
-    VkSampler sampler; // Échantillonneur Vulkan
+    vk::Image texture; // Image Vulkan de l'élément HUD
+    vk::ImageView imageView; // Vue de l'image Vulkan
+    vk::Sampler sampler; // Échantillonneur Vulkan
 };
 
 class HUDManager {
 public:
-    HUDManager(VkDevice device, VkRenderPass renderPass, VkQueue graphicsQueue, VkCommandPool commandPool);
+    HUDManager(vk::Device device, vk::RenderPass renderPass, vk::Queue graphicsQueue, vk::CommandPool commandPool);
     ~HUDManager();
 
     void addComponent(float x, float y, float width, float height, const std::string& texturePath);
     void removeComponent(int index);
     void cleanupComponents();
-    void render(VkCommandBuffer commandBuffer);
+    void render(vk::CommandBuffer commandBuffer);
 
 private:
-    VkDevice m_device;
-    VkRenderPass m_renderPass;
-    VkQueue m_graphicsQueue;
-    VkCommandPool m_commandPool;
+    vk::Device m_device;
+    vk::RenderPass m_renderPass;
+    vk::Queue m_graphicsQueue;
+    vk::CommandPool m_commandPool;
     std::vector<HUDComponent> m_components;
 
     // Méthodes pour créer et gérer les ressources Vulkan
-    /*VkImage createTextureImage(const std::string& texturePath);*/
-    VkImageView createTextureImageView(VkImage image);
-    VkSampler createTextureSampler();
-    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+    vk::Image createTextureImage(const std::string& texturePath);
+    vk::ImageView createTextureImageView(vk::Image image);
+    vk::Sampler createTextureSampler();
+    void transitionImageLayout(vk::Image image, vk::Format format, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
 
-    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-    void createImage(VkDeviceSize size, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+    void createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Buffer& buffer, vk::DeviceMemory& bufferMemory);
+    void createImage(vk::DeviceSize size, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Image& image, vk::DeviceMemory& imageMemory);
 
-    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+    void copyBufferToImage(vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height);
 
-    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+    vk::ImageView createImageView(vk::Image image, vk::Format format, vk::ImageAspectFlags aspectFlags);
 };
 
 #endif // HUD_MANAGER_H
