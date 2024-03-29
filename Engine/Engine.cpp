@@ -13,9 +13,10 @@ int main() {
     SoundClass soundSample;
     SoundGroup soundGroup;
     Channel channel;
+    ChannelGroup channelGroup;
 
     sound.createSound(&soundSample, "");
-    sound.playSound(soundSample, true, 5, 0.9f, &channel);
+    sound.playSound(soundSample, true, 5, 0.9f, &channel, &channelGroup);
 
     /**
      * @brief Fonction principale du programme.

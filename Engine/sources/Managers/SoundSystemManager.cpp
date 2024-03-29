@@ -63,9 +63,10 @@ void SoundSystemManager::getMasterSoundGroup(SoundGroup* pSoundGroup)
     //}
 //}
 
-void SoundSystemManager::playSound(SoundClass pSound, bool isPlay, int loopCount, float volume, Channel* channelPtr)
+void SoundSystemManager::playSound(SoundClass pSound, bool isPlay, int loopCount, float volume, Channel* channelPtr, ChannelGroup* channelGroupPtr)
 {
     FMOD::Channel* channel = nullptr;
+    FMOD::ChannelGroup* channelGroup = nullptr;
 
     if (!isPlay)
     {
@@ -77,6 +78,8 @@ void SoundSystemManager::playSound(SoundClass pSound, bool isPlay, int loopCount
         pSound->setLoopCount(loopCount);
     }
 
+    channel->setChannelGroup(channelGroup);
+    addSoundToGroup(pSound, channelGroup);
     system->playSound(pSound, channelGroup, false, &channel);
 
     channel->setVolume(volume);

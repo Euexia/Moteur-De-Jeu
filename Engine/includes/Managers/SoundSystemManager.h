@@ -15,6 +15,8 @@ typedef FMOD::SoundGroup* SoundGroup;
 
 typedef FMOD::Channel* Channel;
 
+typedef FMOD::ChannelGroup* ChannelGroup;
+
 /**
  * @brief Classe SoundSystemManager : Gère le système audio utilisant la bibliothèque FMOD
  */
@@ -43,7 +45,7 @@ public:
      * @param isPlay Booléen indiquant si le son doit être joué immédiatement
      * @param loopCount Int indiquant combien de fois l'audio doit ce jouer
      */
-    void playSound(SoundClass _pSound, bool _isPlay, int loopCount, float volume, Channel* channelPtr);
+    void playSound(SoundClass _pSound, bool _isPlay, int loopCount, float volume, Channel* channelPtr, ChannelGroup* channelGroupPtr);
 
     /**
      * @brief Libère les ressources utilisées par un son spécifié
