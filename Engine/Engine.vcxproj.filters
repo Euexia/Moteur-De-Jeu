@@ -144,6 +144,15 @@
     <ClCompile Include="lve_constants.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sources\Camera\CameraManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\Event\EventHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LineRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="first_app.h">
@@ -255,6 +264,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lve_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Camera\CameraManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Event\EventHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LineRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

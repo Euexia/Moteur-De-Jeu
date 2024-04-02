@@ -157,6 +157,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="LineRenderer.cpp" />
+    <ClCompile Include="sources\Event\EventHandler.cpp" />
+    <ClCompile Include="sources\Camera\CameraManager.cpp" />
     <ClCompile Include="functionHelpers.cpp" />
     <ClCompile Include="lve_constants.cpp" />
     <ClCompile Include="lve_image.cpp" />
@@ -170,6 +173,8 @@
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="includes\Event\EventHandler.h" />
+    <ClInclude Include="includes\Camera\CameraManager.h" />
     <ClInclude Include="functionHelpers.h" />
     <ClInclude Include="includes\Camera\BaseCamera.h" />
     <ClInclude Include="includes\Managers\HUDManager.h" />
@@ -204,6 +209,7 @@
     <ClCompile Include="sources\SubSystem.cpp" />
     <ClCompile Include="sources\Systems\point_light_system.cpp" />
     <ClCompile Include="sources\Systems\simple_render_system.cpp" />
+    <ClInclude Include="LineRenderer.h" />
     <ClInclude Include="lve_constants.h" />
     <ClInclude Include="lve_image.h" />
     <ClInclude Include="Transform.h" />

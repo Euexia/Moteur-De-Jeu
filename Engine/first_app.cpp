@@ -59,7 +59,7 @@ namespace lve {
                 .Build(globalDescriptorSets[i]);
         }
 
-        SimpleRenderSystem simpleRenderSystem{ lveDevice, lveRenderer.GetSwapChainRenderPass(), globalSetLayout->GetDescriptorSetLayout() };
+        LineRender simpleRenderSystem{ lveDevice, lveRenderer.GetSwapChainRenderPass(), globalSetLayout->GetDescriptorSetLayout() };
         PointLightSystem pointLightSystem{ lveDevice, lveRenderer.GetSwapChainRenderPass(), globalSetLayout->GetDescriptorSetLayout() };
         LveCamera camera{};
 

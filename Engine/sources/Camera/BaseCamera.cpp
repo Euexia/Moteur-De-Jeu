@@ -53,13 +53,13 @@ namespace lve {
 	{
 	}
 
-	void BaseCamera::Update()
+	void BaseCamera::Update(float _deltaTime)
 	{
 		prevPosition = position;
 
-		/*roll = Lerp(roll, 0.0f, rollRestorationSpeed * g_DeltaTime);
-
-		AudioManager::SetListenerPos(position);
+		roll = Lerp(roll, 0.0f, rollRestorationSpeed * _deltaTime);
+		velocity = (position - prevPosition) / _deltaTime;
+		/*AudioManager::SetListenerPos(position);
 		AudioManager::SetListenerVel(velocity);*/
 	}
 

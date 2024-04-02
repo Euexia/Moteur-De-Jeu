@@ -24,13 +24,14 @@ namespace lve {
 
 	class BaseCamera
 	{
+	public:
 		BaseCamera(const std::string& cameraName, CameraType type, bool bIsGameplayCam, float FOV = glm::radians(45.0f),
 			float zNear = 0.5f, float zFar = 1000.0f);
 		virtual ~BaseCamera();
 
 		virtual void Initialize();
 		virtual void FixedUpdate();
-		virtual void Update();
+		virtual void Update(float _deltaTime);
 		virtual void LateUpdate();
 		virtual void Destroy();
 

@@ -25,14 +25,14 @@ namespace lve {
      *
      * Cette classe gère l'exécution de la première application Vulkan, incluant la création de la fenêtre.
      */
-    class SimpleRenderSystem {
+    class LineRender {
     public:
 
-        SimpleRenderSystem(LveDevice& _device, vk::RenderPass _renderPass, vk::DescriptorSetLayout _globalSetLayout);
-        ~SimpleRenderSystem();
+        LineRender(LveDevice& _device, vk::RenderPass _renderPass, vk::DescriptorSetLayout _globalSetLayout);
+        ~LineRender();
 
-        SimpleRenderSystem(const SimpleRenderSystem&) = delete;
-        SimpleRenderSystem operator=(const SimpleRenderSystem&) = delete;
+        LineRender(const LineRender&) = delete;
+        LineRender operator=(const LineRender&) = delete;
 
         /**
          * @brief Rend les objets de jeu avec le système de rendu simple.

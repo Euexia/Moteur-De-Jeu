@@ -13,14 +13,14 @@
 
 namespace lve {
 
-    SimpleRenderSystem::SimpleRenderSystem(LveDevice& _device, vk::RenderPass _renderPass, vk::DescriptorSetLayout _globalSetLayout) : lveDevice(_device) {
+    LineRender::LineRender(LveDevice& _device, vk::RenderPass _renderPass, vk::DescriptorSetLayout _globalSetLayout) : lveDevice(_device) {
         CreatePipelineLayout(_globalSetLayout);
         CreatePipeline(_renderPass);
     }
 
-    SimpleRenderSystem::~SimpleRenderSystem() { lveDevice.device().destroyPipelineLayout(pipelineLayout, nullptr); }
+    LineRender::~LineRender() { lveDevice.device().destroyPipelineLayout(pipelineLayout, nullptr); }
 
-    void SimpleRenderSystem::CreatePipelineLayout(vk::DescriptorSetLayout _globalSetLayout) {
+    void LineRender::CreatePipelineLayout(vk::DescriptorSetLayout _globalSetLayout) {
         vk::PushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
         pushConstantRange.offset = 0;
@@ -41,7 +41,7 @@ namespace lve {
     }
 
 
-    void SimpleRenderSystem::CreatePipeline(vk::RenderPass _renderPass) {
+    void LineRender::CreatePipeline(vk::RenderPass _renderPass) {
         assert(pipelineLayout != nullptr && "Cannot create pipeline before pipeline layout");
 
         PipelineConfigInfo pipelineConfig{};
@@ -55,7 +55,7 @@ namespace lve {
             pipelineConfig);
     }
 
-    void SimpleRenderSystem::RenderGameObjects(FrameInfo& _frameInfo) {
+    void LineRender::RenderGameObjects(FrameInfo& _frameInfo) {
         // Liaison du pipeline
         lvePipeline->Bind(_frameInfo.commandBuffer);
 
