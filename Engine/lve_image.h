@@ -33,6 +33,8 @@ namespace lve {
 			vk::MemoryPropertyFlags properties, 
 			vk::Image& image,
 			vk::DeviceMemory& imageMemory);
+		
+		void transitionImageLayout(vk::Image image, vk::Format, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
 
 		LveDevice& lveDevice;
 

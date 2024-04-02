@@ -235,7 +235,7 @@ namespace lve {
 
             if (lveDevice.device().createImageView(&viewInfo, nullptr, &swapChainImageViews[i]) != vk::Result::eSuccess)
             {
-                throw std::runtime_error("failed!");
+                throw std::runtime_error("failed to create texture image view!");
             }
            
         }
@@ -448,6 +448,34 @@ namespace lve {
             { vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint, vk::Format::eD24UnormS8Uint },
             vk::ImageTiling::eOptimal,
             vk::FormatFeatureFlagBits::eDepthStencilAttachment);
+    }
+
+    void LveSwapChain::createTextureSampler() {
+        vk::SamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = vk::StructureType::eSamplerCreateInfo;
+        samplerInfo.magFilter = vk::Filter::eLinear;
+        samplerInfo.minFilter = vk::Filter::eLinear;
+
+        samplerInfo.addressModeU = vk::SamplerAddressMode::eRepeat;
+        samplerInfo.addressModeV = vk::SamplerAddressMode::eRepeat;
+        samplerInfo.addressModeW = vk::SamplerAddressMode::eRepeat;
+
+        //samplerInfo.anisotropyEnable = vk::True;
+        //samplerInfo.maxAnisotropy = lveDevice.properties.limits.maxSamplerAnisotropy;
+        samplerInfo.anisotropyEnable = vk::False;
+        samplerInfo.maxAnisotropy = 1.0f;
+
+        samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
+        samplerInfo.unnormalizedCoordinates = vk::False;
+
+        samplerInfo.compareEnable = vk::False;
+        samplerInfo.compareOp = vk::CompareOp::eAlways;
+
+        samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
+        samplerInfo.mipLodBias = 0.0f;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = 0.0f;
+
     }
 
 }  // namespace lve

@@ -35,7 +35,9 @@ namespace lve {
 		createImage(texWidth, texHeight, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled
 			, vk::MemoryPropertyFlagBits::eDeviceLocal, textureImage, textureImageMemory);
 
+		transitionImageLayout(textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
 		lveDevice.copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight),1);
+		transitionImageLayout(textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
 	
 		lveDevice.device().destroyBuffer(stagingBuffer);
 		lveDevice.device().freeMemory(stagingBufferMemory, nullptr);
@@ -81,4 +83,10 @@ namespace lve {
 		lveDevice.device().bindImageMemory(image, imageMemory, 0);
 
 	}
+	void LveImage::transitionImageLayout(vk::Image image, vk::Format, vk::ImageLayout oldLayout, vk::ImageLayout newLayout) {
+		vk::CommandBuffer commandBuffer = lveDevice.beginSingleTimeCommands();
+		
+		lveDevice.endSingleTimeCommands(commandBuffer);
+	}
+
 }

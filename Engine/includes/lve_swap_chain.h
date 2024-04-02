@@ -252,6 +252,8 @@ namespace lve {
          */
         vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
 
+        void createTextureSampler();
+
         vk::Format swapChainImageFormat;
         vk::Format swapChainDepthFormat;
         vk::Extent2D swapChainExtent;
