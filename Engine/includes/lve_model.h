@@ -69,7 +69,7 @@ public:
 		 * @param _filepath Le chemin du fichier du modèle.
 		 * @throws std::runtime_error Si une erreur survient lors du chargement du modèle.
 		 */
-		void LoadModel(const std::string& _filepath);
+		void LoadModel(LveDevice& _device, const std::string& _filepath);
 	};
 
 	LveModel(LveDevice& _lveDevice, const LveModel::Builder &_builder);

@@ -7,6 +7,8 @@
 #include <glm.hpp>
 #include <gtc/constants.hpp>
 
+#include "lve_texture.h"
+
 // std
 #include <array>
 #include <cassert>
@@ -19,6 +21,7 @@ void WindowManager::Init() {
 
 	builder.SetMaxSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
 		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+	builder.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
 	globalPool = builder.Build();
 
@@ -43,9 +46,18 @@ void WindowManager::Start()
 		uboBuffers[i]->map();
 	}
 
-	auto globalSetLayout = lve::LveDescriptorSetLayout::Builder(lveDevice)
-		.AddBinding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eAllGraphics)
-		.Build();
+	auto globalSetLayout = 
+		lve::LveDescriptorSetLayout::Builder(lveDevice)
+			.AddBinding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eAllGraphics)
+			.AddBinding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+			.Build();
+
+	lve::LveTexture texture = lve::LveTexture(lveDevice, "../Textures/coconut.jpg");
+
+	vk::DescriptorImageInfo imageInfo{};
+	imageInfo.sampler = texture.getSampler();
+	imageInfo.imageView = texture.getImageView();
+	imageInfo.imageLayout = texture.getImageLayout();
 
 	globalDescriptorSets.resize(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
@@ -53,6 +65,7 @@ void WindowManager::Start()
 		auto bufferInfo = uboBuffers[i]->descriptorInfo();
 		lve::LveDescriptorWriter(*globalSetLayout, *globalPool)
 			.WriteBuffer(0, &bufferInfo)
+			.WriteImage(1, &imageInfo)
 			.Build(globalDescriptorSets[i]);
 	}
 

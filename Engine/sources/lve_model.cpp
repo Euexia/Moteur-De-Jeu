@@ -48,7 +48,9 @@ namespace lve {
 
 	std::unique_ptr<LveModel> LveModel::CreateModelFromFile(LveDevice& _device, const std::string& _filepath) {
 		Builder builder{};
-		builder.LoadModel(ENGINE_DIR + _filepath);
+
+		builder.LoadModel(_device, ENGINE_DIR + _filepath);
+
 		std::cout << "Vertex Count" << builder.vertices.size() << std::endl;
 
 		return std::make_unique<LveModel>(_device, builder);
@@ -201,7 +203,7 @@ namespace lve {
 		return attributeDescriptions;
 	}
 
-	void LveModel::Builder::LoadModel(const std::string& _filepath) {
+	void LveModel::Builder::LoadModel(LveDevice& _device , const std::string& _filepath) {
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
@@ -226,12 +228,15 @@ namespace lve {
 						attrib.vertices[3 * index.vertex_index + 2],
 					};
 
+					//vertex.color = { 1,0,0 };
 					vertex.color = {
 						attrib.colors[3 * index.vertex_index + 0],
 						attrib.colors[3 * index.vertex_index + 1],
 						attrib.colors[3 * index.vertex_index + 2],
 					};
 				}
+
+				//vertex.normal = { 1,0,0 };
 
 				if (index.normal_index >= 0) {
 					vertex.normal = {

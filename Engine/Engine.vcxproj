@@ -157,7 +157,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="lve_image.cpp" />
+    <ClCompile Include="lve_texture.cpp" />
     <ClCompile Include="sources\CoreEngine.cpp" />
     <ClCompile Include="sources\Managers\WindowManager.cpp" />
     <ClCompile Include="sources\ModuleManager.cpp" />
@@ -204,7 +204,7 @@
     <ClCompile Include="sources\SubSystem.cpp" />
     <ClCompile Include="sources\Systems\point_light_system.cpp" />
     <ClCompile Include="sources\Systems\simple_render_system.cpp" />
-    <ClInclude Include="lve_image.h" />
+    <ClInclude Include="lve_texture.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
