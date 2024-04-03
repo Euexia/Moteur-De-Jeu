@@ -60,6 +60,24 @@ void WindowManager::Start()
 	imageInfo.imageView = texture.getImageView();
 	imageInfo.imageLayout = texture.getImageLayout();
 
+		//if (texture.getSampler() != VK_NULL_HANDLE) {
+		//	imageInfo.sampler = texture.getSampler();
+		//}
+		//else {
+		//	std::cerr << "Error: Texture sampler is invalid." << std::endl;
+		//	// Handle error or return early
+		//}
+
+		//// Check if image view is valid
+		//if (texture.getImageView() != VK_NULL_HANDLE) {
+		//	imageInfo.imageView = texture.getImageView();
+		//}
+		//else {
+		//	std::cerr << "Error: Texture image view is invalid." << std::endl;
+		//	// Handle error or return early
+		//}
+
+
 	globalDescriptorSets.resize(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
 	for (int i = 0; i < globalDescriptorSets.size(); i++) {

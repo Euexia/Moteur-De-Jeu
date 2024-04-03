@@ -104,10 +104,10 @@ namespace lve {
 	}
 
 	LveTexture::~LveTexture() {
-		lveDevice.device().destroyImage(image, nullptr);
-		lveDevice.device().freeMemory(imageMemory, nullptr);
-		lveDevice.device().destroyImageView(imageView, nullptr);
-		lveDevice.device().destroySampler(sampler, nullptr);
+		//lveDevice.device().destroyImage(image, nullptr);
+		//lveDevice.device().freeMemory(imageMemory, nullptr);
+		//lveDevice.device().destroyImageView(imageView, nullptr);
+		//lveDevice.device().destroySampler(sampler, nullptr);
 	}
 
 	void LveTexture::transitionImageLayout(vk::ImageLayout oldLayout, vk::ImageLayout newLayout) {

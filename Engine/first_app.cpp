@@ -1,6 +1,6 @@
 #include "first_app.h"
 
-
+#include "lve_texture.h"
 #include "lve_camera.h"   
 #include "keyboard_movement_controller.h"   
 #include "lve_buffer.h"   
@@ -26,7 +26,8 @@ namespace lve {
     FirstApp::FirstApp() {
         LveDescriptorPool::Builder builder{ lveDevice };
         builder.SetMaxSets(LveSwapChain::MAX_FRAMES_IN_FLIGHT)
-            .AddPoolSize(vk::DescriptorType::eUniformBuffer, LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+            .AddPoolSize(vk::DescriptorType::eUniformBuffer, LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+            .AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
         globalPool = builder.Build();
         LoadGameObjects();
@@ -49,13 +50,22 @@ namespace lve {
 
         auto globalSetLayout = LveDescriptorSetLayout::Builder(lveDevice)
             .AddBinding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eAllGraphics)
+            .AddBinding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
             .Build();
+
+        lve::LveTexture texture = lve::LveTexture(lveDevice, "../Textures/coconut.jpg");
+
+        vk::DescriptorImageInfo imageInfo{};
+        imageInfo.sampler = texture.getSampler();
+        imageInfo.imageView = texture.getImageView();
+        imageInfo.imageLayout = texture.getImageLayout();
 
         std::vector<vk::DescriptorSet> globalDescriptorSets(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
         for (int i = 0; i < globalDescriptorSets.size(); i++) {
             auto bufferInfo = uboBuffers[i]->descriptorInfo();
             LveDescriptorWriter(*globalSetLayout, *globalPool)
                 .WriteBuffer(0, &bufferInfo)
+                .WriteImage(1, &imageInfo)
                 .Build(globalDescriptorSets[i]);
         }
 
