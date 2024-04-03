@@ -3,6 +3,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <iostream>
+#include <fstream>
+
+bool fileExists(const std::string& filename) {
+	std::ifstream file(filename);
+	return file.good(); // Check if the file stream is in a good state (i.e., file exists)
+}
+
 namespace lve {
 	LveTexture::LveTexture(LveDevice& _device, const std::string& filepath) : lveDevice(_device) {
 		int width;
@@ -10,17 +18,25 @@ namespace lve {
 		int channels;
 		int bytesPerPixel;
 
+		std::string filePath = filepath; // Replace this with your file path
+		if (fileExists(filePath)) {
+			std::cout << "File exists at path: " << filePath << std::endl;
+		}
+		else {
+			std::cout << "File does not exist at path: " << filePath << std::endl;
+		}
+
 		// symbole externe non résolu stbi_load
 		stbi_uc* data = stbi_load(filepath.c_str(), &width, &height, &bytesPerPixel, 4);
 
-		LveBuffer staginBuffer(lveDevice, 4,
-			static_cast<uint32_t>(width, height),
+		LveBuffer stagingBuffer(lveDevice, 4,
+			static_cast<uint32_t>(width * height),
 			vk::BufferUsageFlagBits::eTransferSrc,
 			vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
 		);
 
-		staginBuffer.map();
-		staginBuffer.writeToBuffer(data);
+		stagingBuffer.map();
+		stagingBuffer.writeToBuffer(data);
 
 		imageFormat = vk::Format::eR8G8B8A8Srgb;
 
@@ -38,6 +54,10 @@ namespace lve {
 		imageInfo.usage = vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled;
 
 		lveDevice.createImageWithInfo(imageInfo, vk::MemoryPropertyFlagBits::eDeviceLocal, image, imageMemory);
+
+		transitionImageLayout(vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+
+		lveDevice.copyBufferToImage(stagingBuffer.getBuffer(), image, static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1);
 
 		transitionImageLayout(vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
 
@@ -74,6 +94,10 @@ namespace lve {
 		imageViewInfo.image = image;
 
 		lveDevice.device().createImageView(&imageViewInfo, nullptr, &imageView);
+		//vk::Result result = lveDevice.device().createImageView(&imageViewInfo, nullptr, &imageView);
+		//if (result != vk::Result::eSuccess) {
+		//	throw std::runtime_error("ERROR creating image view");
+		//}
 
 		stbi_image_free(data); // symbole externe non résolu stbi_image_free
 

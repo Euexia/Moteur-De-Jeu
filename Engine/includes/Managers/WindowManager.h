@@ -19,6 +19,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <chrono>
 
 
 class WindowManager final : public Module

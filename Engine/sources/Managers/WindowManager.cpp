@@ -20,8 +20,9 @@ void WindowManager::Init() {
 	Module::Init();
 
 	builder.SetMaxSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
-		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
-	builder.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+
 
 	globalPool = builder.Build();
 
