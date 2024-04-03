@@ -43,6 +43,8 @@ namespace lve {
 		lveDevice.device().freeMemory(stagingBufferMemory, nullptr);
 	}
 
+	// Déjà dans lveDevice -> createImageWithInfo
+
 	void LveImage::createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, 
 		vk::MemoryPropertyFlags properties, vk::Image& image, vk::DeviceMemory& imageMemory) {
 
