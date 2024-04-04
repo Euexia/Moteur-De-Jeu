@@ -32,6 +32,11 @@ namespace lve {
 		using id_t = unsigned int;
 		using Map = std::unordered_map<id_t, LveGameObject>;
 		
+		LveGameObject& operator=(const glm::vec3& newColor) {
+			color = newColor;
+			return *this;
+		}
+
 		static LveGameObject CreateGameObject() {
 			static id_t currentId = 0;
 			return LveGameObject{ currentId++ };

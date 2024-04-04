@@ -9,18 +9,27 @@
 
 
 // std
+#include <random>
 #include <array>
 #include <cassert>
 #include <chrono>
 #include <stdexcept>
 #include <numeric>
 
+float getRandomFloat() {
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+	return dis(gen);
+}
+
+
 void WindowManager::Init() {
 	Module::Init();
 
 	builder.SetMaxSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
-		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
-		.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+		//.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
 
 	globalPool = builder.Build();
@@ -47,17 +56,17 @@ void WindowManager::Start()
 	}
 
 	// il y a beaucoup de rouge quand on les mets
-	texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png");
+	//texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png");
 
-	vk::DescriptorImageInfo imageInfo{};
-	imageInfo.sampler = texture->getSampler();
-	imageInfo.imageView = texture->getImageView();
-	imageInfo.imageLayout = texture->getImageLayout();
+	//vk::DescriptorImageInfo imageInfo{};
+	//imageInfo.sampler = texture->getSampler();
+	//imageInfo.imageView = texture->getImageView();
+	//imageInfo.imageLayout = texture->getImageLayout();
 
 	auto globalSetLayout = 
 		lve::LveDescriptorSetLayout::Builder(lveDevice)
 			.AddBinding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eAllGraphics)
-			.AddBinding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+			//.AddBinding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
 			.Build();
 
 	globalDescriptorSets.resize(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -66,7 +75,7 @@ void WindowManager::Start()
 		auto bufferInfo = uboBuffers[i]->descriptorInfo();
 		lve::LveDescriptorWriter(*globalSetLayout, *globalPool)
 			.WriteBuffer(0, &bufferInfo)
-			.WriteImage(1, &imageInfo)
+			//.WriteImage(1, &imageInfo)
 			.Build(globalDescriptorSets[i]);
 	}
 
@@ -129,7 +138,33 @@ void WindowManager::Update()
 			pointLightSystem->Render(frameInfo);//render shadow casting objects
 			lveRenderer.EndSwapChainRenderPass(commandBuffer);
 			lveRenderer.EndFrame();//end offscreen shadow pass
+
 		}
+
+		// Peut changer les couleurs des objets ici
+		// 
+		//for (auto& [id, gameObject] : *gameObjects) {
+		//	// Generate random color values
+		//	float r = getRandomFloat();
+		//	float g = getRandomFloat();
+		//	float b = getRandomFloat();
+
+		//	// Update the color attribute of the gameObject
+		//	gameObject.color.x = r;
+		//	gameObject.color.y = g;
+		//	gameObject.color.z = b;
+		//}
+
+		for (auto& [id, gameObject] : *gameObjects) {
+		
+			if (id == 6) {
+				gameObject.color = { getRandomFloat(),getRandomFloat(),getRandomFloat() };
+
+				//std::cout << "Changed Color !";
+			}
+
+		}
+
 	}
 	else {
 		vkDeviceWaitIdle(lveDevice.device());
@@ -146,6 +181,7 @@ void WindowManager::LoadGameObjects() {
 	flatVaseGO.model = lveModel;
 	flatVaseGO.transform.translation = { -.5f, .5f, 0.f };
 	flatVaseGO.transform.scale = { 3.f, 1.5f, 3.f };
+	flatVaseGO.color = {0.2,0.4,0.5};
 	gameObjects->emplace(flatVaseGO.GetId(), std::move(flatVaseGO));
 
 	lveModel = lve::LveModel::CreateModelFromFile(lveDevice, "Models\\smooth_vase.obj");
@@ -153,6 +189,7 @@ void WindowManager::LoadGameObjects() {
 	smoothVaseGO.model = lveModel;
 	smoothVaseGO.transform.translation = { .5f, .5f, 0.f };
 	smoothVaseGO.transform.scale = { 3.f, 1.5f, 3.f };
+	flatVaseGO.color = { 0.2,1,0.5 };
 	gameObjects->emplace(smoothVaseGO.GetId(), std::move(smoothVaseGO));
 
 	lveModel = lve::LveModel::CreateModelFromFile(lveDevice, "Models\\quad.obj");
@@ -167,6 +204,7 @@ void WindowManager::LoadGameObjects() {
 	Viking.model = lveModel;
 	Viking.transform.translation = { 0.f, 0.f, 5.f };
 	Viking.transform.scale = { 3.f, 3.f, 3.f };
+	flatVaseGO.color = { 1,1,0.5 };
 	Viking.transform.rotation = { glm::radians(90.0f), glm::radians(90.0f), 0.0f };
 	gameObjects->emplace(Viking.GetId(), std::move(Viking));
 

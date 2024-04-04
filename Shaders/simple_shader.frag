@@ -21,7 +21,7 @@ layout(set = 0, binding = 0) uniform GlobalUbo {
   int numLights;
 } ubo;
 
-layout(set = 0, binding = 1) uniform sampler2D image;
+//layout(set = 0, binding = 1) uniform sampler2D image;
 
 layout(push_constant) uniform Push {
   mat4 modelMatrix;
@@ -54,8 +54,16 @@ void main() {
     blinnTerm = pow(blinnTerm, 512.0); // higher values -> sharper highlight
     specularLight += intensity * blinnTerm;
   }
+  vec3 imageColor;
   
-  vec3 imageColor = texture(image, fragUV).rgb;
+  // Check if texture is provided
+  //if (ubo.numLights > 0) {
+    // Texture provided, sample from it
+  //  imageColor = texture(image, fragUV).rgb;
+  //} else {
+    // No texture provided, use default color or value
+  imageColor = vec3(1.0); // Use white color as default
+  //}
 
   outColor = vec4((diffuseLight * imageColor + specularLight * imageColor), 1.0);
 }
