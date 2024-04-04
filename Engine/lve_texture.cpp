@@ -67,8 +67,8 @@ namespace lve {
 
 		vk::SamplerCreateInfo samplerInfo{};
 		samplerInfo.sType = vk::StructureType::eSamplerCreateInfo;
-		samplerInfo.magFilter = vk::Filter::eNearest;
-		samplerInfo.minFilter = vk::Filter::eNearest;
+		samplerInfo.magFilter = vk::Filter::eLinear;
+		samplerInfo.minFilter = vk::Filter::eLinear;
 		samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
 		samplerInfo.addressModeU = vk::SamplerAddressMode::eRepeat;
 		samplerInfo.addressModeV = vk::SamplerAddressMode::eRepeat;
@@ -76,9 +76,9 @@ namespace lve {
 		samplerInfo.mipLodBias = 0.0f;
 		samplerInfo.compareOp = vk::CompareOp::eNever;
 		samplerInfo.minLod = 0.0f;
-		samplerInfo.maxLod = 0.0f;
-		samplerInfo.maxAnisotropy = 1.0f;
-		samplerInfo.anisotropyEnable = vk::False;
+		samplerInfo.maxLod = static_cast<float>(mipLevels);
+		samplerInfo.maxAnisotropy = 4.0f;
+		samplerInfo.anisotropyEnable = vk::True;
 		samplerInfo.borderColor = vk::BorderColor::eFloatOpaqueWhite;
 
 		lveDevice.device().createSampler(&samplerInfo, nullptr, &sampler);
@@ -89,10 +89,10 @@ namespace lve {
 		imageViewInfo.format = imageFormat;
 		imageViewInfo.components = (vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA );
 		imageViewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-		imageViewInfo.subresourceRange.baseMipLevel = static_cast<uint32_t>(mipLevels);
+		imageViewInfo.subresourceRange.baseMipLevel = 0;
 		imageViewInfo.subresourceRange.baseArrayLayer = 0;
 		imageViewInfo.subresourceRange.layerCount = 1;
-		imageViewInfo.subresourceRange.levelCount = static_cast<uint32_t>(mipLevels);
+		imageViewInfo.subresourceRange.levelCount = mipLevels;
 		imageViewInfo.image = image;
 
 		lveDevice.device().createImageView(&imageViewInfo, nullptr, &imageView);
@@ -183,10 +183,8 @@ namespace lve {
 		barrier.srcQueueFamilyIndex = vk::QueueFamilyIgnored;
 		barrier.dstQueueFamilyIndex = vk::QueueFamilyIgnored;
 		barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-		barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-		barrier.subresourceRange.baseMipLevel = 0;
-		barrier.subresourceRange.levelCount = 1;
 		barrier.subresourceRange.baseArrayLayer = 0;
+		barrier.subresourceRange.levelCount = 1;
 		barrier.subresourceRange.layerCount = 1;
 
 		int32_t mipWidth = width;
@@ -210,11 +208,66 @@ namespace lve {
 			);
 
 			vk::ImageBlit blit{};
-			//blit.setSrcOffsets(0,{ 0, 0, 0 })
-			//blit.
-			// https://youtu.be/_AitmLEnP28?si=hTLQLP502pKyZAvH
+			blit.srcOffsets[0].x = 0;
+			blit.srcOffsets[0].y = 0;
+			blit.srcOffsets[0].z = 0;
+			blit.srcOffsets[1].x = mipWidth;
+			blit.srcOffsets[1].y = mipHeight;
+			blit.srcOffsets[1].z = 1;
+			blit.srcSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+			blit.srcSubresource.mipLevel = i - 1;
+			blit.srcSubresource.baseArrayLayer = 0;
+			blit.srcSubresource.layerCount = 1;
+			blit.dstOffsets[0].x = 0;
+			blit.dstOffsets[0].y = 0;
+			blit.dstOffsets[0].z = 0;
+			blit.dstOffsets[1].x = mipWidth > 1 ? mipWidth / 2 : 1;
+			blit.dstOffsets[1].y = mipHeight > 1 ? mipHeight / 2 : 1;
+			blit.dstOffsets[1].z = 1;
+			blit.dstSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+			blit.dstSubresource.mipLevel = i;
+			blit.dstSubresource.baseArrayLayer = 0;
+			blit.dstSubresource.layerCount = 1;
+
+			commandBuffer.blitImage(image, vk::ImageLayout::eTransferSrcOptimal, image, vk::ImageLayout::eTransferDstOptimal, 1, &blit, vk::Filter::eLinear);
+
+			barrier.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
+			barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+			barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+			barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+			commandBuffer.pipelineBarrier(
+				vk::PipelineStageFlagBits::eTransfer,                      // srcStageMask
+				vk::PipelineStageFlagBits::eFragmentShader,                      // dstStageMask
+				vk::DependencyFlags{},                                     // dependencyFlags
+				nullptr,                                                   // memoryBarriers
+				nullptr,                                                   // bufferMemoryBarriers
+				barrier,                                                   // imageMemoryBarriers
+				{}                                                         // dispatch
+			);
+			
+			if (mipWidth > 1) mipWidth /= 2;
+			if (mipHeight > 1) mipHeight /= 2;
 
 		}
+
+		barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+		barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+		barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+		barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+		barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+		commandBuffer.pipelineBarrier(
+			vk::PipelineStageFlagBits::eTransfer,                      // srcStageMask
+			vk::PipelineStageFlagBits::eFragmentShader,                      // dstStageMask
+			vk::DependencyFlags{},                                     // dependencyFlags
+			nullptr,                                                   // memoryBarriers
+			nullptr,                                                   // bufferMemoryBarriers
+			barrier,                                                   // imageMemoryBarriers
+			{}                                                         // dispatch
+		);
+
+		lveDevice.endSingleTimeCommands(commandBuffer);
 
 	}
 
