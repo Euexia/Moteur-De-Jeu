@@ -24,7 +24,9 @@ namespace lve {
 	private:
 
 		void transitionImageLayout(vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
+		void generateMipmaps();
 
+		int width, height, mipLevels;
 		LveDevice& lveDevice;
 		vk::Image image;
 		vk::DeviceMemory imageMemory;

@@ -53,6 +53,7 @@ void WindowManager::Start()
 			.AddBinding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
 			.Build();
 
+	// il y a beaucoup de rouge quand on les mets
 	lve::LveTexture texture = lve::LveTexture(lveDevice, "../Textures/coconut.jpg");
 
 	vk::DescriptorImageInfo imageInfo{};

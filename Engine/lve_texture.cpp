@@ -13,8 +13,6 @@ bool fileExists(const std::string& filename) {
 
 namespace lve {
 	LveTexture::LveTexture(LveDevice& _device, const std::string& filepath) : lveDevice(_device) {
-		int width;
-		int height;
 		int channels;
 		int bytesPerPixel;
 
@@ -28,6 +26,8 @@ namespace lve {
 
 		// symbole externe non résolu stbi_load
 		stbi_uc* data = stbi_load(filepath.c_str(), &width, &height, &bytesPerPixel, 4);
+
+		mipLevels = std::floor(std::log2(std::max(width, height))) + 1;
 
 		LveBuffer stagingBuffer(lveDevice, 4,
 			static_cast<uint32_t>(width * height),
@@ -44,14 +44,14 @@ namespace lve {
 		imageInfo.sType = vk::StructureType::eImageCreateInfo;
 		imageInfo.imageType = vk::ImageType::e2D;
 		imageInfo.format = imageFormat;
-		imageInfo.mipLevels = 1;
+		imageInfo.mipLevels = static_cast<uint32_t>(mipLevels);
 		imageInfo.arrayLayers = 1;
 		imageInfo.samples = vk::SampleCountFlagBits::e1;
 		imageInfo.tiling = vk::ImageTiling::eOptimal;
 		imageInfo.sharingMode = vk::SharingMode::eExclusive;
 		imageInfo.initialLayout = vk::ImageLayout::eUndefined;
 		imageInfo.setExtent({ static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1 });
-		imageInfo.usage = vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled;
+		imageInfo.usage = vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled;
 
 		lveDevice.createImageWithInfo(imageInfo, vk::MemoryPropertyFlagBits::eDeviceLocal, image, imageMemory);
 
@@ -59,7 +59,9 @@ namespace lve {
 
 		lveDevice.copyBufferToImage(stagingBuffer.getBuffer(), image, static_cast<uint32_t>(width), static_cast<uint32_t>(height), 1);
 
-		transitionImageLayout(vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+		//transitionImageLayout(vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
+
+		generateMipmaps();
 
 		imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 
@@ -87,10 +89,10 @@ namespace lve {
 		imageViewInfo.format = imageFormat;
 		imageViewInfo.components = (vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA );
 		imageViewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-		imageViewInfo.subresourceRange.baseMipLevel = 0;
+		imageViewInfo.subresourceRange.baseMipLevel = static_cast<uint32_t>(mipLevels);
 		imageViewInfo.subresourceRange.baseArrayLayer = 0;
 		imageViewInfo.subresourceRange.layerCount = 1;
-		imageViewInfo.subresourceRange.levelCount = 1;
+		imageViewInfo.subresourceRange.levelCount = static_cast<uint32_t>(mipLevels);
 		imageViewInfo.image = image;
 
 		lveDevice.device().createImageView(&imageViewInfo, nullptr, &imageView);
@@ -104,6 +106,8 @@ namespace lve {
 	}
 
 	LveTexture::~LveTexture() {
+		std::cout << "Destroyed !!";
+		
 		//lveDevice.device().destroyImage(image, nullptr);
 		//lveDevice.device().freeMemory(imageMemory, nullptr);
 		//lveDevice.device().destroyImageView(imageView, nullptr);
@@ -122,7 +126,7 @@ namespace lve {
 		barrier.image = image;
 		barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
 		barrier.subresourceRange.baseMipLevel = 0;
-		barrier.subresourceRange.levelCount = 1;
+		barrier.subresourceRange.levelCount = mipLevels;
 		barrier.subresourceRange.baseArrayLayer = 0;
 		barrier.subresourceRange.layerCount = 1;
 
@@ -163,6 +167,55 @@ namespace lve {
 		lveDevice.endSingleTimeCommands(commandBuffer);
 	}
 
+	void LveTexture::generateMipmaps() {
+		vk::FormatProperties formatProperties;
+		lveDevice.getPhysicalDevice().getFormatProperties(imageFormat, &formatProperties);
+		
+		if (!(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eSampledImageFilterLinear)) {
+			throw std::runtime_error("texture image format does not support linear blitting!");
+		}
 
+		vk::CommandBuffer commandBuffer = lveDevice.beginSingleTimeCommands();
+
+		vk::ImageMemoryBarrier barrier{};
+		barrier.sType = vk::StructureType::eImageMemoryBarrier;
+		barrier.image = image;
+		barrier.srcQueueFamilyIndex = vk::QueueFamilyIgnored;
+		barrier.dstQueueFamilyIndex = vk::QueueFamilyIgnored;
+		barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+		barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+		barrier.subresourceRange.baseMipLevel = 0;
+		barrier.subresourceRange.levelCount = 1;
+		barrier.subresourceRange.baseArrayLayer = 0;
+		barrier.subresourceRange.layerCount = 1;
+
+		int32_t mipWidth = width;
+		int32_t mipHeight = height;
+
+		for (uint32_t i = 1; i < mipLevels; i++) {
+			barrier.subresourceRange.baseMipLevel = i - 1;
+			barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+			barrier.newLayout = vk::ImageLayout::eTransferSrcOptimal;
+			barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+			barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+
+			commandBuffer.pipelineBarrier(
+				vk::PipelineStageFlagBits::eTransfer,                      // srcStageMask
+				vk::PipelineStageFlagBits::eTransfer,                      // dstStageMask
+				vk::DependencyFlags{},                                     // dependencyFlags
+				nullptr,                                                   // memoryBarriers
+				nullptr,                                                   // bufferMemoryBarriers
+				barrier,                                                   // imageMemoryBarriers
+				{}                                                         // dispatch
+			);
+
+			vk::ImageBlit blit{};
+			//blit.setSrcOffsets(0,{ 0, 0, 0 })
+			//blit.
+			// https://youtu.be/_AitmLEnP28?si=hTLQLP502pKyZAvH
+
+		}
+
+	}
 
 }

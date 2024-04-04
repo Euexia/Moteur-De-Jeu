@@ -124,6 +124,8 @@ namespace lve {
          */
         SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
 
+        vk::PhysicalDevice getPhysicalDevice() { return physicalDevice; }
+
         /**
          * @brief Trouve un type de mémoire approprié pour une utilisation spécifiée.
          *
