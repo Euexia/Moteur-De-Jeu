@@ -44,7 +44,7 @@ namespace lve {
 		imageInfo.sType = vk::StructureType::eImageCreateInfo;
 		imageInfo.imageType = vk::ImageType::e2D;
 		imageInfo.format = imageFormat;
-		imageInfo.mipLevels = static_cast<uint32_t>(mipLevels);
+		imageInfo.mipLevels = mipLevels;
 		imageInfo.arrayLayers = 1;
 		imageInfo.samples = vk::SampleCountFlagBits::e1;
 		imageInfo.tiling = vk::ImageTiling::eOptimal;
@@ -108,10 +108,10 @@ namespace lve {
 	LveTexture::~LveTexture() {
 		std::cout << "Destroyed !!";
 		
-		//lveDevice.device().destroyImage(image, nullptr);
-		//lveDevice.device().freeMemory(imageMemory, nullptr);
-		//lveDevice.device().destroyImageView(imageView, nullptr);
-		//lveDevice.device().destroySampler(sampler, nullptr);
+		lveDevice.device().destroyImage(image, nullptr);
+		lveDevice.device().freeMemory(imageMemory, nullptr);
+		lveDevice.device().destroyImageView(imageView, nullptr);
+		lveDevice.device().destroySampler(sampler, nullptr);
 	}
 
 	void LveTexture::transitionImageLayout(vk::ImageLayout oldLayout, vk::ImageLayout newLayout) {
@@ -158,7 +158,7 @@ namespace lve {
 		commandBuffer.pipelineBarrier(
 			sourceStage,                      // Source pipeline stage
 			destinationStage,                 // Destination pipeline stage
-			vk::DependencyFlags(),            // Dependency flags
+			vk::DependencyFlags{},            // Dependency flags
 			nullptr,                          // Memory barriers
 			nullptr,                          // Buffer memory barriers
 			barrier                          // Image memory barriers

@@ -7,7 +7,6 @@
 #include <glm.hpp>
 #include <gtc/constants.hpp>
 
-#include "lve_texture.h"
 
 // std
 #include <array>
@@ -47,37 +46,19 @@ void WindowManager::Start()
 		uboBuffers[i]->map();
 	}
 
+	// il y a beaucoup de rouge quand on les mets
+	texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png");
+
+	vk::DescriptorImageInfo imageInfo{};
+	imageInfo.sampler = texture->getSampler();
+	imageInfo.imageView = texture->getImageView();
+	imageInfo.imageLayout = texture->getImageLayout();
+
 	auto globalSetLayout = 
 		lve::LveDescriptorSetLayout::Builder(lveDevice)
 			.AddBinding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eAllGraphics)
 			.AddBinding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
 			.Build();
-
-	// il y a beaucoup de rouge quand on les mets
-	lve::LveTexture texture = lve::LveTexture(lveDevice, "../Textures/coconut.jpg");
-
-	vk::DescriptorImageInfo imageInfo{};
-	imageInfo.sampler = texture.getSampler();
-	imageInfo.imageView = texture.getImageView();
-	imageInfo.imageLayout = texture.getImageLayout();
-
-		//if (texture.getSampler() != VK_NULL_HANDLE) {
-		//	imageInfo.sampler = texture.getSampler();
-		//}
-		//else {
-		//	std::cerr << "Error: Texture sampler is invalid." << std::endl;
-		//	// Handle error or return early
-		//}
-
-		//// Check if image view is valid
-		//if (texture.getImageView() != VK_NULL_HANDLE) {
-		//	imageInfo.imageView = texture.getImageView();
-		//}
-		//else {
-		//	std::cerr << "Error: Texture image view is invalid." << std::endl;
-		//	// Handle error or return early
-		//}
-
 
 	globalDescriptorSets.resize(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 

@@ -228,7 +228,7 @@ namespace lve {
 						attrib.vertices[3 * index.vertex_index + 2],
 					};
 
-					//vertex.color = { 1,0,0 };
+					//vertex.color = { 0, 1, 1 };
 					vertex.color = {
 						attrib.colors[3 * index.vertex_index + 0],
 						attrib.colors[3 * index.vertex_index + 1],

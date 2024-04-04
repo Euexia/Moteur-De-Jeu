@@ -6,6 +6,7 @@
 #include "lve_renderer.h"
 #include "lve_game_object.h"
 #include "lve_descriptors.h"
+#include "lve_texture.h"
 
 #include "lve_camera.h"   
 #include "keyboard_movement_controller.h"   
@@ -64,5 +65,6 @@ private:
 
 	// note : order of declarations matters
 	std::unique_ptr<lve::LveDescriptorPool> globalPool{};
+	std::unique_ptr<lve::LveTexture> texture{};
 	lve::LveGameObject::Map* gameObjects;
 };
