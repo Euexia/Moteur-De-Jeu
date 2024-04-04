@@ -77,7 +77,7 @@ namespace lve {
 		samplerInfo.compareOp = vk::CompareOp::eNever;
 		samplerInfo.minLod = 0.0f;
 		samplerInfo.maxLod = static_cast<float>(mipLevels);
-		samplerInfo.maxAnisotropy = 4.0f;
+		samplerInfo.maxAnisotropy = 4.0;
 		samplerInfo.anisotropyEnable = vk::True;
 		samplerInfo.borderColor = vk::BorderColor::eFloatOpaqueWhite;
 
