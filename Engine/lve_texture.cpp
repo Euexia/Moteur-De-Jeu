@@ -27,6 +27,17 @@ namespace lve {
 		// symbole externe non résolu stbi_load
 		stbi_uc* data = stbi_load(filepath.c_str(), &width, &height, &bytesPerPixel, 4);
 
+		if (data == nullptr) {
+			// Gérer l'erreur de chargement de l'image
+		}
+
+		// Réorganiser les octets pour correspondre à l'ordre attendu par Vulkan
+		for (int i = 0; i < width * height * 4; i += 4) {
+			unsigned char temp = data[i];
+			data[i] = data[i + 2];
+			data[i + 3] = temp;
+		}
+
 		mipLevels = std::floor(std::log2(std::max(width, height))) + 1;
 
 		LveBuffer stagingBuffer(lveDevice, 4,

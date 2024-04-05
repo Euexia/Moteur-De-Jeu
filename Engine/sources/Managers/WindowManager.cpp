@@ -56,17 +56,17 @@ void WindowManager::Start()
 	}
 
 	// il y a beaucoup de rouge quand on les mets
-	//texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png");
+	texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png");
 
-	//vk::DescriptorImageInfo imageInfo{};
-	//imageInfo.sampler = texture->getSampler();
-	//imageInfo.imageView = texture->getImageView();
-	//imageInfo.imageLayout = texture->getImageLayout();
+	vk::DescriptorImageInfo imageInfo{};
+	imageInfo.sampler = texture->getSampler();
+	imageInfo.imageView = texture->getImageView();
+	imageInfo.imageLayout = texture->getImageLayout();
 
 	auto globalSetLayout = 
 		lve::LveDescriptorSetLayout::Builder(lveDevice)
 			.AddBinding(0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eAllGraphics)
-			//.AddBinding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
+			.AddBinding(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment)
 			.Build();
 
 	globalDescriptorSets.resize(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -75,7 +75,7 @@ void WindowManager::Start()
 		auto bufferInfo = uboBuffers[i]->descriptorInfo();
 		lve::LveDescriptorWriter(*globalSetLayout, *globalPool)
 			.WriteBuffer(0, &bufferInfo)
-			//.WriteImage(1, &imageInfo)
+			.WriteImage(1, &imageInfo)
 			.Build(globalDescriptorSets[i]);
 	}
 

@@ -197,7 +197,7 @@ namespace lve {
 
 		attributeDescriptions.push_back({ 0, 0, vk::Format::eR32G32B32Sfloat, static_cast<uint32_t>(offsetof(Vertex, position)) });
 		attributeDescriptions.push_back({ 1, 0, vk::Format::eR32G32B32Sfloat, static_cast<uint32_t>(offsetof(Vertex, color)) });
-		attributeDescriptions.push_back({ 2, 0, vk::Format::eR32G32B32Sfloat, static_cast<uint32_t>(offsetof(Vertex, normal)) }); // dans le tuto -> tex
+		attributeDescriptions.push_back({ 2, 0, vk::Format::eR32G32B32Sfloat, static_cast<uint32_t>(offsetof(Vertex, normal)) });
 		attributeDescriptions.push_back({ 3, 0, vk::Format::eR32G32Sfloat, static_cast<uint32_t>(offsetof(Vertex, uv)) });
 
 		return attributeDescriptions;
