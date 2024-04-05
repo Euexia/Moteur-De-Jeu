@@ -28,8 +28,8 @@ void WindowManager::Init() {
 	Module::Init();
 
 	builder.SetMaxSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
-		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
-		//.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
 
 	globalPool = builder.Build();
@@ -62,6 +62,13 @@ void WindowManager::Start()
 	imageInfo.sampler = texture->getSampler();
 	imageInfo.imageView = texture->getImageView();
 	imageInfo.imageLayout = texture->getImageLayout();
+
+	texture1 = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/coconut.jpg");
+
+	vk::DescriptorImageInfo imageInfo1{};
+	imageInfo1.sampler = texture1->getSampler();
+	imageInfo1.imageView = texture1->getImageView();
+	imageInfo1.imageLayout = texture1->getImageLayout();
 
 	auto globalSetLayout = 
 		lve::LveDescriptorSetLayout::Builder(lveDevice)

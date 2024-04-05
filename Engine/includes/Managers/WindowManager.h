@@ -66,5 +66,6 @@ private:
 	// note : order of declarations matters
 	std::unique_ptr<lve::LveDescriptorPool> globalPool{};
 	std::unique_ptr<lve::LveTexture> texture{};
+	std::unique_ptr<lve::LveTexture> texture1{};
 	lve::LveGameObject::Map* gameObjects;
 };
