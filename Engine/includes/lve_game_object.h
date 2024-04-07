@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lve_model.h"
+#include "lve_texture.h"
 
 #include <vulkan/vulkan.hpp>
 
@@ -69,6 +70,7 @@ namespace lve {
 		// Optional pointer components
 		std::shared_ptr<LveModel> model{};
 		std::unique_ptr<PointLightComponent> pointLight = nullptr;
+		std::unique_ptr<lve::LveTexture> texture = nullptr;
 	private:
 		LveGameObject(id_t _objId) : id(_objId) {}
 

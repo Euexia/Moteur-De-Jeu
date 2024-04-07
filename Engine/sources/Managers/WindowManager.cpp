@@ -55,20 +55,26 @@ void WindowManager::Start()
 		uboBuffers[i]->map();
 	}
 
-	// il y a beaucoup de rouge quand on les mets
-	texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png");
+	// Create textures and add them to the vector
+	textures.emplace_back(std::make_unique<lve::LveTexture>(lveDevice, "../Textures/coconut.jpg"));
+	textures.emplace_back(std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png"));
 
+	// Print the size of the vector
+	std::cout << "Texture vector size: " << textures.size() << std::endl;
 	vk::DescriptorImageInfo imageInfo{};
-	imageInfo.sampler = texture->getSampler();
-	imageInfo.imageView = texture->getImageView();
-	imageInfo.imageLayout = texture->getImageLayout();
+	// Access the first texture in the vector
+	if (!textures.empty()) {
+		imageInfo.sampler = textures[0]->getSampler();
+		imageInfo.imageView = textures[0]->getImageView();
+		imageInfo.imageLayout = textures[0]->getImageLayout();
+	}
 
-	texture1 = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/coconut.jpg");
-
-	vk::DescriptorImageInfo imageInfo1{};
-	imageInfo1.sampler = texture1->getSampler();
-	imageInfo1.imageView = texture1->getImageView();
-	imageInfo1.imageLayout = texture1->getImageLayout();
+	// Access the second texture in the vector
+	if (textures.size() > 1) {
+		imageInfo.sampler = textures[1]->getSampler();
+		imageInfo.imageView = textures[1]->getImageView();
+		imageInfo.imageLayout = textures[1]->getImageLayout();
+	}
 
 	auto globalSetLayout = 
 		lve::LveDescriptorSetLayout::Builder(lveDevice)
@@ -141,7 +147,7 @@ void WindowManager::Update()
 
 			// render
 			lveRenderer.BeginSwapChainRenderPass(commandBuffer);//begin offscreen shadow pass
-			simpleRenderSystem->RenderGameObjects(frameInfo);//render shadow casting objects
+			simpleRenderSystem->RenderGameObjects(frameInfo);//render shadow casting objects (pas que les shadow)
 			pointLightSystem->Render(frameInfo);//render shadow casting objects
 			lveRenderer.EndSwapChainRenderPass(commandBuffer);
 			lveRenderer.EndFrame();//end offscreen shadow pass
@@ -189,6 +195,8 @@ void WindowManager::LoadGameObjects() {
 	flatVaseGO.transform.translation = { -.5f, .5f, 0.f };
 	flatVaseGO.transform.scale = { 3.f, 1.5f, 3.f };
 	flatVaseGO.color = {0.2,0.4,0.5};
+	flatVaseGO.texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/coconut.jpg");
+
 	gameObjects->emplace(flatVaseGO.GetId(), std::move(flatVaseGO));
 
 	lveModel = lve::LveModel::CreateModelFromFile(lveDevice, "Models\\smooth_vase.obj");
@@ -196,7 +204,7 @@ void WindowManager::LoadGameObjects() {
 	smoothVaseGO.model = lveModel;
 	smoothVaseGO.transform.translation = { .5f, .5f, 0.f };
 	smoothVaseGO.transform.scale = { 3.f, 1.5f, 3.f };
-	flatVaseGO.color = { 0.2,1,0.5 };
+	smoothVaseGO.texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/coconut.jpg");
 	gameObjects->emplace(smoothVaseGO.GetId(), std::move(smoothVaseGO));
 
 	lveModel = lve::LveModel::CreateModelFromFile(lveDevice, "Models\\quad.obj");
@@ -204,6 +212,7 @@ void WindowManager::LoadGameObjects() {
 	quadGO.model = lveModel;
 	quadGO.transform.translation = { .0f, .5f, 0.f };
 	quadGO.transform.scale = { 3.f, 1.f, 3.f };
+	quadGO.texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png");
 	gameObjects->emplace(quadGO.GetId(), std::move(quadGO));
 
 	lveModel = lve::LveModel::CreateModelFromFile(lveDevice, "Models\\viking_room.obj");
@@ -213,6 +222,7 @@ void WindowManager::LoadGameObjects() {
 	Viking.transform.scale = { 3.f, 3.f, 3.f };
 	flatVaseGO.color = { 1,1,0.5 };
 	Viking.transform.rotation = { glm::radians(90.0f), glm::radians(90.0f), 0.0f };
+	Viking.texture = std::make_unique<lve::LveTexture>(lveDevice, "../Textures/meme.png");
 	gameObjects->emplace(Viking.GetId(), std::move(Viking));
 
 	std::vector<glm::vec3> lightColors{

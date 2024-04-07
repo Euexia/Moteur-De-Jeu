@@ -59,17 +59,48 @@ namespace lve {
         // Liaison du pipeline
         lvePipeline->Bind(_frameInfo.commandBuffer);
 
-        // Liaison de l'ensemble de descripteurs global
-        _frameInfo.commandBuffer.bindDescriptorSets(
-            vk::PipelineBindPoint::eGraphics,
-            pipelineLayout,
-            0,
-            _frameInfo.globalDescriptorSet,
-            nullptr);
+        //// Liaison de l'ensemble de descripteurs global
+        //_frameInfo.commandBuffer.bindDescriptorSets(
+        //    vk::PipelineBindPoint::eGraphics,
+        //    pipelineLayout,
+        //    0,
+        //    _frameInfo.globalDescriptorSet,
+        //    nullptr);
 
         for (auto& kv : _frameInfo.gameObjects) {
             auto& obj = kv.second;
-            if (obj.model == nullptr) continue;
+            if (obj.model == nullptr || obj.texture == nullptr) continue;
+
+            ///////////
+            // Create the image info for the texture
+            vk::DescriptorImageInfo imageInfo{};
+            imageInfo.sampler = obj.texture->getSampler();
+            imageInfo.imageView = obj.texture->getImageView();
+            imageInfo.imageLayout = obj.texture->getImageLayout();
+
+            _frameInfo.commandBuffer.bindDescriptorSets(
+                vk::PipelineBindPoint::eGraphics,
+                pipelineLayout,
+                0,
+                _frameInfo.globalDescriptorSet,
+                nullptr);
+
+            // Update the descriptor set with the image info for the current texture
+            vk::WriteDescriptorSet descriptorWrite{
+                _frameInfo.globalDescriptorSet, // Use the global descriptor set for the frame
+                1, // Assuming your texture descriptor set has binding 1
+                0, // Assuming your texture descriptor set has array element 0
+                1, // Number of descriptors to update
+                vk::DescriptorType::eCombinedImageSampler, // Type of descriptor
+                &imageInfo, // Pointer to array of image infos
+                nullptr, // Optional buffer info
+                nullptr // Optional texel buffer view info
+            };
+            // Update the descriptor set
+            lveDevice.device().updateDescriptorSets(1, &descriptorWrite, 0, nullptr);
+            ////////////
+
+
             SimplePushConstantData push{};
             push.modelMatrix = obj.transform.mat4();
             push.normalMatrix = obj.transform.normalMatrix();
