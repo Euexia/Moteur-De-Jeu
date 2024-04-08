@@ -10,62 +10,90 @@
 #include <unordered_map>
 #include <gtc/matrix_transform.hpp>
 
-namespace lve {
-	struct TransformComponent {
-		glm::vec3 translation{}; // Position offset
-		glm::vec3 scale{ 1.f,1.f, 1.f };
-		glm::vec3 rotation{};
+namespace lve
+{
+	struct TransformComponent
+	{
+		glm::vec3 translation{};        /**< Dï¿½calage de position. */
+		glm::vec3 scale{1.f, 1.f, 1.f}; /**< Facteurs d'ï¿½chelle sur les axes x, y et z. */
+		glm::vec3 rotation{};           /**< Angles de rotation autour des axes x, y et z (en radians). */
 
-		// Matrix corrsponds to Translate * Ry * Rx * Rz * Scale
-		// Rotations correspond to Tait-bryan angles of Y(1), X(2), Z(3)
-		// https://en.wikipedia.org/wiki/Euler_angles#Rotation_matrix
-		glm::mat4 mat4();
-		glm::mat3 normalMatrix();
+		/**
+		 * @brief Retourne la matrice de transformation correspondante.
+		 *
+		 * Cette fonction retourne la matrice de transformation correspondant aux dï¿½calages de position,
+		 * ï¿½chelles et rotations spï¿½cifiï¿½s dans la structure TransformComponent.
+		 *
+		 * @return La matrice de transformation.
+		 */
+		glm::mat4 Mat4();
+
+		/**
+		 * @brief Retourne la matrice de transformation normale.
+		 *
+		 * Cette fonction retourne la matrice de transformation normale correspondante aux dï¿½calages de position,
+		 * ï¿½chelles et rotations spï¿½cifiï¿½s dans la structure TransformComponent.
+		 * Cette matrice est utilisï¿½e pour la transformation des normales des surfaces afin de les maintenir correctement orientï¿½es
+		 * lors de transformations non uniformes.
+		 *
+		 * @return La matrice de transformation normale.
+		 */
+		glm::mat3 NormalMatrix() const;
 	};
 
-	struct PointLightComponent {
-		float lightIntensity = 1.0f;
+
+	struct PointLightComponent
+	{
+		float lightIntensity = 1.0f; /**< Intensitï¿½ lumineuse de la lumiï¿½re ponctuelle. */
 	};
+
 
 	class LveGameObject
 	{
-	public:
-		using id_t = unsigned int;
-		using Map = std::unordered_map<id_t, LveGameObject>;
-		
-		LveGameObject& operator=(const glm::vec3& newColor) {
-			color = newColor;
-			return *this;
-		}
+		public:
+			using id_t = unsigned int; /**< Type pour identifier les objets. */
+			using Map = std::unordered_map<id_t, LveGameObject>;
+			/**< Type pour reprï¿½senter une carte d'objets avec des identifiants. */
 
-		static LveGameObject CreateGameObject() {
-			static id_t currentId = 0;
-			return LveGameObject{ currentId++ };
-		}
+			/**
+			 * @brief Crï¿½e un nouvel objet de jeu.
+			 *
+			 * Cette fonction crï¿½e un nouvel objet de jeu en gï¿½nï¿½rant un identifiant unique pour cet objet.
+			 *
+			 * @return L'objet de jeu crï¿½ï¿½.
+			 */
+			static LveGameObject CreateGameObject()
+			{
+				static id_t current_id = 0; /**< Identifiant actuel pour les objets crï¿½ï¿½s. */
+				return LveGameObject{current_id++};
+				/**< Retourne un nouvel objet de jeu avec l'identifiant incrï¿½mentï¿½. */
+			}
 
-		LveGameObject(const LveGameObject&) = delete;
-		LveGameObject& operator=(const LveGameObject&) = delete;
-		LveGameObject(LveGameObject&&) = default;
-		LveGameObject& operator=(LveGameObject&&) = default;
+			LveGameObject(const LveGameObject&)            = delete;  /**< Constructeur de copie supprimï¿½. */
+			LveGameObject& operator=(const LveGameObject&) = delete;  /**< Opï¿½rateur d'affectation supprimï¿½. */
+			LveGameObject(LveGameObject&&)                 = default; /**< Constructeur de dï¿½placement par dï¿½faut. */
+			LveGameObject& operator=(LveGameObject&&)      = default; /**< Opï¿½rateur de dï¿½placement par dï¿½faut. */
 
-		id_t GetId() { return id; }
+			/**
+			 * @brief Obtient l'identifiant de l'objet.
+			 *
+			 * @return L'identifiant de l'objet.
+			 */
+			id_t GetId() const { return id; }
 
 
-		/**
-		 * @brief Crée un objet de jeu représentant une lumière ponctuelle.
-		 *
-		 * Cette méthode statique crée un objet de jeu représentant une lumière ponctuelle avec les paramètres spécifiés.
-		 *
-		 * @param _intensity L'intensité de la lumière.
-		 * @param _radius Le rayon d'éclairage de la lumière.
-		 * @param _color La couleur de la lumière.
-		 * @return L'objet de jeu représentant la lumière ponctuelle.
-		 */
-		static LveGameObject MakePointLight(
-			float intensity = 10.f, float radius = 0.1f, glm::vec3 color = glm::vec3(1.f));
-		
-		glm::vec3 color{};
-		TransformComponent transform{};
+			/**
+			 * @brief Crï¿½e un objet de jeu reprï¿½sentant une lumiï¿½re ponctuelle.
+			 *
+			 * Cette mï¿½thode statique crï¿½e un objet de jeu reprï¿½sentant une lumiï¿½re ponctuelle avec les paramï¿½tres spï¿½cifiï¿½s.
+			 *
+			 * @param _intensity L'intensitï¿½ de la lumiï¿½re.
+			 * @param _radius Le rayon d'ï¿½clairage de la lumiï¿½re.
+			 * @param _color La couleur de la lumiï¿½re.
+			 * @return L'objet de jeu reprï¿½sentant la lumiï¿½re ponctuelle.
+			 */
+			static LveGameObject MakePointLight(float     _intensity = 10.f, float _radius = 0.1f,
+			                                    glm::vec3 _color     = glm::vec3(1.f));
 
 		// Optional pointer components
 		std::shared_ptr<LveModel> model{};
@@ -73,9 +101,24 @@ namespace lve {
 		std::unique_ptr<lve::LveTexture> texture = nullptr;
 	private:
 		LveGameObject(id_t _objId) : id(_objId) {}
+			glm::vec3          color{};     /**< Couleur de l'objet. */
+			TransformComponent transform{}; /**< Composant de transformation de l'objet. */
 
-		id_t id;
+			// Optional pointer components
+			//std::shared_ptr<LveModel>            model{}; /**< Modï¿½le de l'objet. */
+			std::unique_ptr<PointLightComponent> pointLight = nullptr;
+			/**< Composant de lumiï¿½re ponctuelle de l'objet, s'il y en a un. */
+
+		private:
+			id_t id; /**< Identifiant de l'objet. */
+
+			/**
+			 * @brief Constructeur de la classe LveGameObject.
+			 *
+			 * @param _objId Identifiant de l'objet.
+			 */
+			explicit LveGameObject(const id_t _objId) : id(_objId)
+			{
+			}
 	};
 } //namespace lve
-
-

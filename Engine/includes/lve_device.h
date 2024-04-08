@@ -2,383 +2,394 @@
 
 #include "lve_window.h"
 
-#include <vulkan/vulkan.hpp> // Inclure les en-têtes Vulkan C++
+#include <vulkan/vulkan.hpp> // Inclure les en-tï¿½tes Vulkan C++
 
 // std lib headers
 #include <string>
 #include <vector>
 
-namespace lve {
+namespace lve
+{
+	// Structure pour stocker les dï¿½tails de support de la chaï¿½ne d'ï¿½change
+	struct SwapChainSupportDetails
+	{
+		vk::SurfaceCapabilitiesKHR        capabilities; // Capacitï¿½s de la surface Vulkan
+		std::vector<vk::SurfaceFormatKHR> formats;      // Formats de surface Vulkan pris en charge
+		std::vector<vk::PresentModeKHR>   presentModes; // Modes de prï¿½sentation Vulkan pris en charge
+	};
 
-    // Structure pour stocker les détails de support de la chaîne d'échange
-    struct SwapChainSupportDetails {
-        vk::SurfaceCapabilitiesKHR capabilities; // Capacités de la surface Vulkan
-        std::vector<vk::SurfaceFormatKHR> formats; // Formats de surface Vulkan pris en charge
-        std::vector<vk::PresentModeKHR> presentModes; // Modes de présentation Vulkan pris en charge
-    };
+	// Structure pour stocker les indices des files d'attente requises
+	struct QueueFamilyIndices
+	{
+		uint32_t graphicsFamily; // Indice de la famille de files d'attente graphiques
+		uint32_t presentFamily;  // Indice de la famille de files d'attente de prï¿½sentation
+		bool     graphicsFamilyHasValue = false;
+		// Indique si l'indice de la famille de files d'attente graphiques est dï¿½fini
+		bool presentFamilyHasValue = false;
+		// Indique si l'indice de la famille de files d'attente de prï¿½sentation est dï¿½fini
 
-    // Structure pour stocker les indices des files d'attente requises
-    struct QueueFamilyIndices {
-        uint32_t graphicsFamily; // Indice de la famille de files d'attente graphiques
-        uint32_t presentFamily; // Indice de la famille de files d'attente de présentation
-        bool graphicsFamilyHasValue = false; // Indique si l'indice de la famille de files d'attente graphiques est défini
-        bool presentFamilyHasValue = false; // Indique si l'indice de la famille de files d'attente de présentation est défini
+		// Vï¿½rifie si les indices des files d'attente requis sont complets
+		bool IsComplete() const { return graphicsFamilyHasValue && presentFamilyHasValue; }
+	};
 
-        // Vérifie si les indices des files d'attente requis sont complets
-        bool isComplete() { return graphicsFamilyHasValue && presentFamilyHasValue; }
-    };
-
-    class LveDevice {
-    public:
-#ifdef NDEBUG
+	class LveDevice
+	{
+		public:
+			#ifdef NDEBUG
         const bool enableValidationLayers = false;
-#else
-        const bool enableValidationLayers = true;
-#endif
+			#else
+			const bool enableValidationLayers = true;
+			#endif
 
-        /**
-        * @brief Constructeur de la classe LveDevice.
-        *
-        * Initialise un périphérique Vulkan en prenant une référence à une fenêtre Vulkan LveWindow en tant que paramètre.
-        *
-        * @param window Une référence à la fenêtre Vulkan utilisée pour initialiser le périphérique.
-        */
-        LveDevice(LveWindow& window);
+			/**
+			* @brief Constructeur de la classe LveDevice.
+			*
+			* Initialise un pï¿½riphï¿½rique Vulkan en prenant une rï¿½fï¿½rence ï¿½ une fenï¿½tre Vulkan LveWindow en tant que paramï¿½tre.
+			*
+			* @param _window Une rï¿½fï¿½rence ï¿½ la fenï¿½tre Vulkan utilisï¿½e pour initialiser le pï¿½riphï¿½rique.
+			*/
+			explicit LveDevice(LveWindow& _window);
 
-        /**
-         * @brief Destructeur de la classe LveDevice.
-         *
-         * Nettoie les ressources associées au périphérique Vulkan lorsqu'il est détruit.
-         */
-        ~LveDevice();
+			/**
+			 * @brief Destructeur de la classe LveDevice.
+			 *
+			 * Nettoie les ressources associï¿½es au pï¿½riphï¿½rique Vulkan lorsqu'il est dï¿½truit.
+			 */
+			~LveDevice();
 
-        // Not copyable or movable
-        /**
-        * @brief Constructeur de copie supprimé.
-        *
-        * Empêche la création d'une nouvelle instance de LveDevice en copiant une instance existante.
-        */
-        LveDevice(const LveDevice&) = delete;
+			// Not copyable or movable
+			/**
+			* @brief Constructeur de copie supprimï¿½.
+			*
+			* Empï¿½che la crï¿½ation d'une nouvelle instance de LveDevice en copiant une instance existante.
+			*/
+			LveDevice(const LveDevice&) = delete;
 
-        /**
-        * @brief Opérateur d'affectation de copie supprimé.
-        *
-        * Empêche la copie des membres d'une instance de LveDevice vers une autre instance existante.
-        */
-        LveDevice &operator=(const LveDevice&) = delete;
+			/**
+			* @brief Opï¿½rateur d'affectation de copie supprimï¿½.
+			*
+			* Empï¿½che la copie des membres d'une instance de LveDevice vers une autre instance existante.
+			*/
+			LveDevice& operator=(const LveDevice&) = delete;
 
-        /**
-        * @brief Constructeur de déplacement supprimé.
-        *
-        * Empêche la création d'une nouvelle instance de LveDevice en déplaçant une instance existante.
-        */
-        LveDevice(LveDevice&&) = delete;
+			/**
+			* @brief Constructeur de dï¿½placement supprimï¿½.
+			*
+			* Empï¿½che la crï¿½ation d'une nouvelle instance de LveDevice en dï¿½plaï¿½ant une instance existante.
+			*/
+			LveDevice(LveDevice&&) = delete;
 
-        /**
-        * @brief Opérateur d'affectation de déplacement supprimé.
-        *
-        * Empêche le déplacement des membres d'une instance de LveDevice vers une autre instance existante.
-        */
-        LveDevice& operator=(LveDevice&&) = delete;
+			/**
+			* @brief Opï¿½rateur d'affectation de dï¿½placement supprimï¿½.
+			*
+			* Empï¿½che le dï¿½placement des membres d'une instance de LveDevice vers une autre instance existante.
+			*/
+			LveDevice& operator=(LveDevice&&) = delete;
 
-        /**
-        * @brief Récupère le pool de commandes Vulkan associé au périphérique.
-        *
-        * @return Le pool de commandes Vulkan associé au périphérique.
-        */
-        vk::CommandPool getCommandPool() { return commandPool; }
+			/**
+			* @brief Rï¿½cupï¿½re le pool de commandes Vulkan associï¿½ au pï¿½riphï¿½rique.
+			*
+			* @return Le pool de commandes Vulkan associï¿½ au pï¿½riphï¿½rique.
+			*/
+			vk::CommandPool GetCommandPool() const { return commandPool; }
 
-        /**
-         * @brief Récupère l'objet de périphérique Vulkan.
-         *
-         * @return L'objet de périphérique Vulkan.
-         */
-        vk::Device device() { return device_; }
+			/**
+			 * @brief Rï¿½cupï¿½re l'objet de pï¿½riphï¿½rique Vulkan.
+			 *
+			 * @return L'objet de pï¿½riphï¿½rique Vulkan.
+			 */
+			vk::Device Device() const { return device_; }
 
-        /**
-         * @brief Récupère la surface Vulkan associée au périphérique.
-         *
-         * @return La surface Vulkan associée au périphérique.
-         */
-        vk::SurfaceKHR surface() { return surface_; }
+			// MAURAD
+			vk::Instance       GetInstance() const { return instance; }
+			vk::PhysicalDevice GetPhysicalDevice() const { return physicalDevice; }
 
-        /**
-         * @brief Récupère la file de commandes graphiques du périphérique.
-         *
-         * @return La file de commandes graphiques du périphérique.
-         */
-        vk::Queue graphicsQueue() { return graphicsQueue_; }
+			/**
+			 * @brief Rï¿½cupï¿½re la surface Vulkan associï¿½e au pï¿½riphï¿½rique.
+			 *
+			 * @return La surface Vulkan associï¿½e au pï¿½riphï¿½rique.
+			 */
+			vk::SurfaceKHR Surface() const { return surface_; }
 
-        /**
-         * @brief Récupère la file de commandes de présentation du périphérique.
-         *
-         * @return La file de commandes de présentation du périphérique.
-         */
-        vk::Queue presentQueue() { return presentQueue_; }
+			/**
+			 * @brief Rï¿½cupï¿½re la file de commandes graphiques du pï¿½riphï¿½rique.
+			 *
+			 * @return La file de commandes graphiques du pï¿½riphï¿½rique.
+			 */
+			vk::Queue GraphicsQueue() const { return graphicsQueue_; }
 
-
-        /**
-         * @brief Récupère les détails de prise en charge de la chaîne de balisage pour le périphérique.
-         *
-         * @return Les détails de prise en charge de la chaîne de balisage pour le périphérique.
-         */
-        SwapChainSupportDetails getSwapChainSupport() { return querySwapChainSupport(physicalDevice); }
-
-        vk::PhysicalDevice getPhysicalDevice() { return physicalDevice; }
-
-        /**
-         * @brief Trouve un type de mémoire approprié pour une utilisation spécifiée.
-         *
-         * @param typeFilter Le type de filtre de mémoire.
-         * @param properties Les propriétés de la mémoire.
-         * @return Le type de mémoire approprié.
-         */
-        uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
-
-        /**
-         * @brief Trouve les familles de files de commandes physiques disponibles sur le périphérique.
-         *
-         * @return Les familles de files de commandes physiques disponibles sur le périphérique.
-         */
-        QueueFamilyIndices findPhysicalQueueFamilies() { return findQueueFamilies(physicalDevice); }
-
-        /**
-         * @brief Trouve un format d'image supporté par le périphérique.
-         *
-         * @param candidates Les formats d'image candidats.
-         * @param tiling L'inclinaison de l'image.
-         * @param features Les fonctionnalités du format de l'image.
-         * @return Le format d'image supporté par le périphérique.
-         */
-        vk::Format findSupportedFormat(
-            const std::vector<vk::Format>& candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features);
+			/**
+			 * @brief Rï¿½cupï¿½re la file de commandes de prï¿½sentation du pï¿½riphï¿½rique.
+			 *
+			 * @return La file de commandes de prï¿½sentation du pï¿½riphï¿½rique.
+			 */
+			vk::Queue PresentQueue() const { return presentQueue_; }
 
 
-        // Buffer Helper Functions
-        /**
-         * @brief Crée un tampon Vulkan avec les paramètres spécifiés.
-         *
-         * @param size La taille du tampon.
-         * @param usage Les indicateurs d'utilisation du tampon.
-         * @param properties Les propriétés de la mémoire du tampon.
-         * @param buffer Référence à l'objet tampon Vulkan créé.
-         * @param bufferMemory Référence à l'objet mémoire du tampon Vulkan créé.
-         */
-        void createBuffer(
-            vk::DeviceSize size,
-            vk::BufferUsageFlags usage,
-            vk::MemoryPropertyFlags properties,
-            vk::Buffer& buffer,
-            vk::DeviceMemory& bufferMemory);
+			/**
+			 * @brief Rï¿½cupï¿½re les dï¿½tails de prise en charge de la chaï¿½ne de balisage pour le pï¿½riphï¿½rique.
+			 *
+			 * @return Les dï¿½tails de prise en charge de la chaï¿½ne de balisage pour le pï¿½riphï¿½rique.
+			 */
+			SwapChainSupportDetails GetSwapChainSupport() { return QuerySwapChainSupport(physicalDevice); }
 
-        /**
-         * @brief Démarre une séquence de commandes Vulkan temporaires.
-         *
-         * Cette fonction alloue un tampon de commandes Vulkan et le démarre pour une utilisation unique.
-         *
-         * @return Le tampon de commandes Vulkan alloué.
-         */
-        vk::CommandBuffer beginSingleTimeCommands();
+			/**
+			 * @brief Trouve un type de mï¿½moire appropriï¿½ pour une utilisation spï¿½cifiï¿½e.
+			 *
+			 * @param _typeFilter Le type de filtre de mï¿½moire.
+			 * @param _properties Les propriï¿½tï¿½s de la mï¿½moire.
+			 * @return Le type de mï¿½moire appropriï¿½.
+			 */
+			uint32_t FindMemoryType(uint32_t _typeFilter, vk::MemoryPropertyFlags _properties) const;
 
-        /**
-         * @brief Termine une séquence de commandes Vulkan temporaires.
-         *
-         * Cette fonction termine l'exécution d'une séquence de commandes Vulkan temporaires et libère les ressources associées.
-         *
-         * @param commandBuffer Le tampon de commandes Vulkan à terminer.
-         */
-        void endSingleTimeCommands(vk::CommandBuffer commandBuffer);
+			/**
+			 * @brief Trouve les familles de files de commandes physiques disponibles sur le pï¿½riphï¿½rique.
+			 *
+			 * @return Les familles de files de commandes physiques disponibles sur le pï¿½riphï¿½rique.
+			 */
+			QueueFamilyIndices FindPhysicalQueueFamilies() { return FindQueueFamilies(physicalDevice); }
 
-        /**
-         * @brief Copie les données d'un tampon source vers un tampon de destination.
-         *
-         * @param srcBuffer Le tampon source à partir duquel copier les données.
-         * @param dstBuffer Le tampon de destination où copier les données.
-         * @param size La taille des données à copier.
-         */
-        void copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, vk::DeviceSize size);
-
-        /**
-         * @brief Copie les données d'un tampon vers une image Vulkan.
-         *
-         * Cette fonction copie les données d'un tampon Vulkan vers une image Vulkan en spécifiant la largeur, la hauteur et le nombre de couches de l'image.
-         *
-         * @param buffer Le tampon contenant les données à copier.
-         * @param image L'image Vulkan de destination.
-         * @param width La largeur de l'image.
-         * @param height La hauteur de l'image.
-         * @param layerCount Le nombre de couches de l'image.
-         */
-        void copyBufferToImage(
-            vk::Buffer buffer, vk::Image image, uint32_t width, uint32_t height, uint32_t layerCount);
-
-        /**
-         * @brief Crée une image Vulkan avec les informations fournies.
-         *
-         * Cette fonction crée une image Vulkan en utilisant les informations spécifiées dans la structure VkImageCreateInfo.
-         *
-         * @param imageInfo Les informations de création de l'image.
-         * @param properties Les propriétés de la mémoire de l'image.
-         * @param image Référence à l'objet image Vulkan créé.
-         * @param imageMemory Référence à l'objet mémoire de l'image Vulkan créé.
-         */
-        void createImageWithInfo(
-            const vk::ImageCreateInfo& imageInfo,
-            vk::MemoryPropertyFlags properties,
-            vk::Image& image,
-            vk::DeviceMemory& imageMemory);
-
-        /**
-         * @brief Propriétés du périphérique physique Vulkan associé.
-         *
-         * Cette structure contient les propriétés du périphérique physique Vulkan associé.
-         */
-        vk::PhysicalDeviceProperties properties;
+			/**
+			 * @brief Trouve un format d'image supportï¿½ par le pï¿½riphï¿½rique.
+			 *
+			 * @param _candidates Les formats d'image candidats.
+			 * @param _tiling L'inclinaison de l'image.
+			 * @param _features Les fonctionnalitï¿½s du format de l'image.
+			 * @return Le format d'image supportï¿½ par le pï¿½riphï¿½rique.
+			 */
+			vk::Format FindSupportedFormat(
+				const std::vector<vk::Format>& _candidates, vk::ImageTiling _tiling,
+				vk::FormatFeatureFlags         _features) const;
 
 
-    private:
+			// Buffer Helper Functions
+			/**
+			 * @brief Crï¿½e un tampon Vulkan avec les paramï¿½tres spï¿½cifiï¿½s.
+			 *
+			 * @param _size La taille du tampon.
+			 * @param _usage Les indicateurs d'utilisation du tampon.
+			 * @param _properties Les propriï¿½tï¿½s de la mï¿½moire du tampon.
+			 * @param _buffer Rï¿½fï¿½rence ï¿½ l'objet tampon Vulkan crï¿½ï¿½.
+			 * @param _bufferMemory Rï¿½fï¿½rence ï¿½ l'objet mï¿½moire du tampon Vulkan crï¿½ï¿½.
+			 */
+			void CreateBuffer(
+				vk::DeviceSize          _size,
+				vk::BufferUsageFlags    _usage,
+				vk::MemoryPropertyFlags _properties,
+				vk::Buffer&             _buffer,
+				vk::DeviceMemory&       _bufferMemory) const;
 
-        /**
-         * @brief Crée une instance Vulkan.
-         *
-         * Cette fonction initialise une instance Vulkan, qui représente la connexion entre l'application et l'API Vulkan.
-         */
-        void createInstance();
+			/**
+			 * @brief Dï¿½marre une sï¿½quence de commandes Vulkan temporaires.
+			 *
+			 * Cette fonction alloue un tampon de commandes Vulkan et le dï¿½marre pour une utilisation unique.
+			 *
+			 * @return Le tampon de commandes Vulkan allouï¿½.
+			 */
+			vk::CommandBuffer BeginSingleTimeCommands() const;
 
-        /**
-         * @brief Configure le gestionnaire de débogage.
-         *
-         * Cette fonction configure un gestionnaire de débogage Vulkan pour recevoir les messages de validation et de débogage de l'API Vulkan.
-         */
-        void setupDebugMessenger();
+			/**
+			 * @brief Termine une sï¿½quence de commandes Vulkan temporaires.
+			 *
+			 * Cette fonction termine l'exï¿½cution d'une sï¿½quence de commandes Vulkan temporaires et libï¿½re les ressources associï¿½es.
+			 *
+			 * @param _commandBuffer Le tampon de commandes Vulkan ï¿½ terminer.
+			 */
+			void EndSingleTimeCommands(vk::CommandBuffer _commandBuffer) const;
 
-        /**
-         * @brief Crée une surface Vulkan.
-         *
-         * Cette fonction crée une surface Vulkan à partir de la fenêtre Vulkan associée.
-         */
-        void createSurface();
+			/**
+			 * @brief Copie les donnï¿½es d'un tampon source vers un tampon de destination.
+			 *
+			 * @param _srcBuffer Le tampon source ï¿½ partir duquel copier les donnï¿½es.
+			 * @param _dstBuffer Le tampon de destination oï¿½ copier les donnï¿½es.
+			 * @param _size La taille des donnï¿½es ï¿½ copier.
+			 */
+			void CopyBuffer(vk::Buffer _srcBuffer, vk::Buffer _dstBuffer, vk::DeviceSize _size) const;
 
-        /**
-         * @brief Sélectionne le périphérique physique Vulkan approprié.
-         *
-         * Cette fonction sélectionne le périphérique physique Vulkan approprié parmi ceux disponibles sur le système.
-         */
-        void pickPhysicalDevice();
+			/**
+			 * @brief Copie les donnï¿½es d'un tampon vers une image Vulkan.
+			 *
+			 * Cette fonction copie les donnï¿½es d'un tampon Vulkan vers une image Vulkan en spï¿½cifiant la largeur, la hauteur et le nombre de couches de l'image.
+			 *
+			 * @param _buffer Le tampon contenant les donnï¿½es ï¿½ copier.
+			 * @param _image L'image Vulkan de destination.
+			 * @param _width La largeur de l'image.
+			 * @param _height La hauteur de l'image.
+			 * @param _layerCount Le nombre de couches de l'image.
+			 */
+			void CopyBufferToImage(
+				vk::Buffer _buffer, vk::Image _image, uint32_t _width, uint32_t _height, uint32_t _layerCount) const;
 
-        /**
-         * @brief Crée le périphérique logique Vulkan.
-         *
-         * Cette fonction crée le périphérique logique Vulkan qui sera utilisé pour interagir avec le matériel graphique.
-         */
-        void createLogicalDevice();
+			/**
+			 * @brief Crï¿½e une image Vulkan avec les informations fournies.
+			 *
+			 * Cette fonction crï¿½e une image Vulkan en utilisant les informations spï¿½cifiï¿½es dans la structure VkImageCreateInfo.
+			 *
+			 * @param _imageInfo Les informations de crï¿½ation de l'image.
+			 * @param _properties Les propriï¿½tï¿½s de la mï¿½moire de l'image.
+			 * @param _image Rï¿½fï¿½rence ï¿½ l'objet image Vulkan crï¿½ï¿½.
+			 * @param _imageMemory Rï¿½fï¿½rence ï¿½ l'objet mï¿½moire de l'image Vulkan crï¿½ï¿½.
+			 */
+			void CreateImageWithInfo(
+				const vk::ImageCreateInfo& _imageInfo,
+				vk::MemoryPropertyFlags    _properties,
+				vk::Image&                 _image,
+				vk::DeviceMemory&          _imageMemory) const;
 
-        /**
-         * @brief Crée le pool de commandes Vulkan.
-         *
-         * Cette fonction crée un pool de commandes Vulkan, qui est utilisé pour allouer des tampons de commandes pour le périphérique logique.
-         */
-        void createCommandPool();
+			/**
+			 * @brief Propriï¿½tï¿½s du pï¿½riphï¿½rique physique Vulkan associï¿½.
+			 *
+			 * Cette structure contient les propriï¿½tï¿½s du pï¿½riphï¿½rique physique Vulkan associï¿½.
+			 */
+			vk::PhysicalDeviceProperties properties;
 
+			/**
+		  * @brief Crï¿½e une instance Vulkan.
+		  *
+		  * Cette fonction initialise une instance Vulkan, qui reprï¿½sente la connexion entre l'application et l'API Vulkan.
+		  */
+			vk::Instance CreateInstance();
 
-        // helper functions
-        /**
-         * @brief Vérifie si le périphérique physique Vulkan spécifié convient aux besoins de l'application.
-         *
-         * Cette fonction examine les propriétés et les capacités du périphérique pour déterminer s'il convient à l'application.
-         *
-         * @param device Le périphérique physique Vulkan à évaluer.
-         * @return true si le périphérique convient, sinon false.
-         */
-        bool isDeviceSuitable(vk::PhysicalDevice device);
+			/**
+			* @brief Configure le gestionnaire de dï¿½bogage.
+			*
+			* Cette fonction configure un gestionnaire de dï¿½bogage Vulkan pour recevoir les messages de validation et de dï¿½bogage de l'API Vulkan.
+			*/
+			vk::DebugUtilsMessengerEXT SetupDebugMessenger();
 
-        /**
-         * @brief Récupère les extensions Vulkan requises par l'application.
-         *
-         * Cette fonction retourne un vecteur contenant les noms des extensions Vulkan nécessaires à l'application.
-         *
-         * @return Un vecteur de pointeurs de chaînes C représentant les noms des extensions requises.
-         */
-        std::vector<const char*> getRequiredExtensions();
+		private:
+			/**
+			 * @brief Crï¿½e une surface Vulkan.
+			 *
+			 * Cette fonction crï¿½e une surface Vulkan ï¿½ partir de la fenï¿½tre Vulkan associï¿½e.
+			 */
+			void CreateSurface();
 
-        /**
-         * @brief Vérifie la prise en charge des couches de validation Vulkan.
-         *
-         * Cette fonction vérifie si les couches de validation Vulkan spécifiées sont prises en charge par l'instance Vulkan.
-         *
-         * @return true si les couches de validation sont prises en charge, sinon false.
-         */
-        bool checkValidationLayerSupport();
+			/**
+			 * @brief Sï¿½lectionne le pï¿½riphï¿½rique physique Vulkan appropriï¿½.
+			 *
+			 * Cette fonction sï¿½lectionne le pï¿½riphï¿½rique physique Vulkan appropriï¿½ parmi ceux disponibles sur le systï¿½me.
+			 */
+			void PickPhysicalDevice();
 
-        /**
-         * @brief Recherche les familles de files de commandes supportées par le périphérique physique Vulkan spécifié.
-         *
-         * Cette fonction identifie les indices des familles de files de commandes graphiques et de présentation supportées par le périphérique.
-         *
-         * @param device Le périphérique physique Vulkan à évaluer.
-         * @return Une structure contenant les indices des familles de files de commandes supportées.
-         */
-        QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
+			/**
+			 * @brief Crï¿½e le pï¿½riphï¿½rique logique Vulkan.
+			 *
+			 * Cette fonction crï¿½e le pï¿½riphï¿½rique logique Vulkan qui sera utilisï¿½ pour interagir avec le matï¿½riel graphique.
+			 */
+			void CreateLogicalDevice();
 
-        /**
-         * @brief Remplit une structure de données pour la création d'un gestionnaire de débogage Vulkan.
-         *
-         * Cette fonction initialise une structure de données pour la création d'un gestionnaire de débogage Vulkan avec les informations nécessaires.
-         *
-         * @param createInfo La structure de données à remplir pour la création du gestionnaire de débogage.
-         */
-        void populateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& createInfo);
-
-        /**
-         * @brief Vérifie si l'instance Vulkan possède les extensions requises par GLFW.
-         *
-         * Cette fonction vérifie si l'instance Vulkan possède les extensions requises par GLFW pour créer une surface Vulkan.
-         */
-        void hasGflwRequiredInstanceExtensions();
-
-        /**
-         * @brief Vérifie si le périphérique physique Vulkan spécifié prend en charge les extensions de périphérique nécessaires.
-         *
-         * Cette fonction vérifie si le périphérique physique Vulkan spécifié prend en charge les extensions de périphérique requises par l'application.
-         *
-         * @param device Le périphérique physique Vulkan à évaluer.
-         * @return true si les extensions de périphérique sont prises en charge, sinon false.
-         */
-        bool checkDeviceExtensionSupport(vk::PhysicalDevice device);
-
-        /**
-         * @brief Interroge le périphérique physique Vulkan spécifié pour obtenir les détails de support de la chaîne d'échange.
-         *
-         * Cette fonction interroge le périphérique physique Vulkan spécifié pour obtenir les détails de support de la chaîne d'échange, tels que les capacités, les formats de surface supportés et les modes de présentation supportés.
-         *
-         * @param device Le périphérique physique Vulkan à interroger.
-         * @return Une structure contenant les détails de support de la chaîne d'échange.
-         */
-        SwapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device);
+			/**
+			 * @brief Crï¿½e le pool de commandes Vulkan.
+			 *
+			 * Cette fonction crï¿½e un pool de commandes Vulkan, qui est utilisï¿½ pour allouer des tampons de commandes pour le pï¿½riphï¿½rique logique.
+			 */
+			void CreateCommandPool();
 
 
-        vk::Instance instance; /**< L'instance Vulkan utilisée par l'application. */
+			// helper functions
+			/**
+			 * @brief Vï¿½rifie si le pï¿½riphï¿½rique physique Vulkan spï¿½cifiï¿½ convient aux besoins de l'application.
+			 *
+			 * Cette fonction examine les propriï¿½tï¿½s et les capacitï¿½s du pï¿½riphï¿½rique pour dï¿½terminer s'il convient ï¿½ l'application.
+			 *
+			 * @param _device Le pï¿½riphï¿½rique physique Vulkan ï¿½ ï¿½valuer.
+			 * @return true si le pï¿½riphï¿½rique convient, sinon false.
+			 */
+			bool IsDeviceSuitable(vk::PhysicalDevice _device);
 
-        vk::DebugUtilsMessengerEXT debugMessenger; /**< Le gestionnaire de débogage Vulkan pour la gestion des messages de validation et de débogage. */
+			/**
+			 * @brief Rï¿½cupï¿½re les extensions Vulkan requises par l'application.
+			 *
+			 * Cette fonction retourne un vecteur contenant les noms des extensions Vulkan nï¿½cessaires ï¿½ l'application.
+			 *
+			 * @return Un vecteur de pointeurs de chaï¿½nes C reprï¿½sentant les noms des extensions requises.
+			 */
+			std::vector<const char*> GetRequiredExtensions() const;
 
-        vk::PhysicalDevice physicalDevice = VK_NULL_HANDLE; /**< Le périphérique physique Vulkan utilisé par l'application, initialisé à VK_NULL_HANDLE par défaut. */
+			/**
+			 * @brief Vï¿½rifie la prise en charge des couches de validation Vulkan.
+			 *
+			 * Cette fonction vï¿½rifie si les couches de validation Vulkan spï¿½cifiï¿½es sont prises en charge par l'instance Vulkan.
+			 *
+			 * @return true si les couches de validation sont prises en charge, sinon false.
+			 */
+			bool CheckValidationLayerSupport() const;
 
-        LveWindow& window; /**< Une référence à la fenêtre Vulkan utilisée par l'application. */
+			/**
+			 * @brief Recherche les familles de files de commandes supportï¿½es par le pï¿½riphï¿½rique physique Vulkan spï¿½cifiï¿½.
+			 *
+			 * Cette fonction identifie les indices des familles de files de commandes graphiques et de prï¿½sentation supportï¿½es par le pï¿½riphï¿½rique.
+			 *
+			 * @param _device Le pï¿½riphï¿½rique physique Vulkan ï¿½ ï¿½valuer.
+			 * @return Une structure contenant les indices des familles de files de commandes supportï¿½es.
+			 */
+			QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice _device) const;
 
-        vk::CommandPool commandPool; /**< Le pool de commandes Vulkan utilisé pour allouer les tampons de commandes. */
+			/**
+			 * @brief Remplit une structure de donnï¿½es pour la crï¿½ation d'un gestionnaire de dï¿½bogage Vulkan.
+			 *
+			 * Cette fonction initialise une structure de donnï¿½es pour la crï¿½ation d'un gestionnaire de dï¿½bogage Vulkan avec les informations nï¿½cessaires.
+			 *
+			 * @param _createInfo La structure de donnï¿½es ï¿½ remplir pour la crï¿½ation du gestionnaire de dï¿½bogage.
+			 */
+			void PopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& _createInfo);
 
-        vk::Device device_; /**< Le périphérique logique Vulkan utilisé par l'application. */
+			/**
+			 * @brief Vï¿½rifie si l'instance Vulkan possï¿½de les extensions requises par GLFW.
+			 *
+			 * Cette fonction vï¿½rifie si l'instance Vulkan possï¿½de les extensions requises par GLFW pour crï¿½er une surface Vulkan.
+			 */
+			void HasGlfwRequiredInstanceExtensions() const;
 
-        vk::SurfaceKHR surface_; /**< La surface Vulkan associée à la fenêtre Vulkan utilisée par l'application. */
+			/**
+			 * @brief Vï¿½rifie si le pï¿½riphï¿½rique physique Vulkan spï¿½cifiï¿½ prend en charge les extensions de pï¿½riphï¿½rique nï¿½cessaires.
+			 *
+			 * Cette fonction vï¿½rifie si le pï¿½riphï¿½rique physique Vulkan spï¿½cifiï¿½ prend en charge les extensions de pï¿½riphï¿½rique requises par l'application.
+			 *
+			 * @param _device Le pï¿½riphï¿½rique physique Vulkan ï¿½ ï¿½valuer.
+			 * @return true si les extensions de pï¿½riphï¿½rique sont prises en charge, sinon false.
+			 */
+			bool CheckDeviceExtensionSupport(vk::PhysicalDevice _device) const;
 
-        vk::Queue graphicsQueue_; /**< La file de commandes pour les opérations graphiques sur le périphérique logique. */
+			/**
+			 * @brief Interroge le pï¿½riphï¿½rique physique Vulkan spï¿½cifiï¿½ pour obtenir les dï¿½tails de support de la chaï¿½ne d'ï¿½change.
+			 *
+			 * Cette fonction interroge le pï¿½riphï¿½rique physique Vulkan spï¿½cifiï¿½ pour obtenir les dï¿½tails de support de la chaï¿½ne d'ï¿½change, tels que les capacitï¿½s, les formats de surface supportï¿½s et les modes de prï¿½sentation supportï¿½s.
+			 *
+			 * @param _device Le pï¿½riphï¿½rique physique Vulkan ï¿½ interroger.
+			 * @return Une structure contenant les dï¿½tails de support de la chaï¿½ne d'ï¿½change.
+			 */
+			SwapChainSupportDetails QuerySwapChainSupport(vk::PhysicalDevice _device) const;
 
-        vk::Queue presentQueue_; /**< La file de commandes pour les opérations de présentation sur le périphérique logique. */
 
-        const std::vector<const char*> validationLayers = { "VK_LAYER_KHRONOS_validation" }; /**< Les couches de validation Vulkan activées par défaut. */
+			vk::Instance instance; /**< L'instance Vulkan utilisï¿½e par l'application. */
 
-        const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME }; /**< Les extensions de périphérique Vulkan utilisées par l'application, avec l'extension de la chaîne d'échange Vulkan activée par défaut. */
+			vk::DebugUtilsMessengerEXT debugMessenger;
+			/**< Le gestionnaire de dï¿½bogage Vulkan pour la gestion des messages de validation et de dï¿½bogage. */
 
-    };
+			vk::PhysicalDevice physicalDevice = VK_NULL_HANDLE;
+			/**< Le pï¿½riphï¿½rique physique Vulkan utilisï¿½ par l'application, initialisï¿½ ï¿½ VK_NULL_HANDLE par dï¿½faut. */
 
-}  // namespace lve
+			LveWindow& window; /**< Une rï¿½fï¿½rence ï¿½ la fenï¿½tre Vulkan utilisï¿½e par l'application. */
+
+			vk::CommandPool commandPool;
+			/**< Le pool de commandes Vulkan utilisï¿½ pour allouer les tampons de commandes. */
+
+			vk::Device device_; /**< Le pï¿½riphï¿½rique logique Vulkan utilisï¿½ par l'application. */
+
+			vk::SurfaceKHR surface_; /**< La surface Vulkan associï¿½e ï¿½ la fenï¿½tre Vulkan utilisï¿½e par l'application. */
+
+			vk::Queue graphicsQueue_;
+			/**< La file de commandes pour les opï¿½rations graphiques sur le pï¿½riphï¿½rique logique. */
+
+			vk::Queue presentQueue_;
+			/**< La file de commandes pour les opï¿½rations de prï¿½sentation sur le pï¿½riphï¿½rique logique. */
+
+			const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+			/**< Les couches de validation Vulkan activï¿½es par dï¿½faut. */
+
+			const std::vector<const char*> deviceExtensions = {vk::KHRSwapchainExtensionName};
+			/**< Les extensions de pï¿½riphï¿½rique Vulkan utilisï¿½es par l'application, avec l'extension de la chaï¿½ne d'ï¿½change Vulkan activï¿½e par dï¿½faut. */
+	};
+} // namespace lve

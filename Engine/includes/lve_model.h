@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-#include "lve_device.h"
 #include "lve_buffer.h"
+#include "lve_device.h"
 
 //libs
 #define GLM_FORCE_RADIANS
@@ -11,142 +11,170 @@
 
 //std
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
-namespace lve {
-class LveModel
+namespace lve
 {
+	class LveModel
+	{
+		public:
+			/**
+			 * @brief Structure reprï¿½sentant un vertex dans l'espace 3D.
+			 */
+			struct Vertex
+			{
+				glm::vec3 position{}; /**< Position du vertex dans l'espace. */
+				glm::vec3 color{};    /**< Couleur du vertex. */
+				glm::vec3 normal{};   /**< Normale du vertex. */
+				glm::vec2 uv{};       /**< Coordonnï¿½es de texture du vertex. */
 
-public:
+				/**
+				 * @brief Obtient les descriptions de liaison des entrï¿½es de vertex.
+				 *
+				 * @return Un vecteur contenant les descriptions de liaison des entrï¿½es de vertex.
+				 */
+				static std::vector<vk::VertexInputBindingDescription> GetBindingDescriptions();
 
-	struct Vertex {
-		glm::vec3 position{};
-		glm::vec3 color{};
-		glm::vec3 normal{};
-		glm::vec2 uv{};
+				/**
+				 * @brief Obtient les descriptions d'attribut des entrï¿½es de vertex.
+				 *
+				 * @return Un vecteur contenant les descriptions d'attribut des entrï¿½es de vertex.
+				 */
+				static std::vector<vk::VertexInputAttributeDescription> GetAttributeDescriptions();
+
+				/**
+				 * @brief Opï¿½rateur de comparaison d'ï¿½galitï¿½.
+				 *
+				 * @param _other L'autre vertex ï¿½ comparer.
+				 * @return true si les deux vertices sont ï¿½gaux, sinon false.
+				 */
+				bool operator==(const Vertex& _other) const
+				{
+					return position == _other.position && color == _other.color && normal == _other.normal && uv ==
+					       _other.uv;
+				}
+			};
 
 
-		/**
-		 * @brief Obtient les descriptions de liaison des entrées de vertex.
-		 *
-		 * Cette fonction retourne les descriptions de liaison des entrées de vertex pour le pipeline de rendu.
-		 * Elle crée un vecteur de descriptions de liaison avec une seule description, où le binding est défini sur 0,
-		 * la stride est définie sur la taille d'une structure Vertex, et le taux d'entrée est défini sur VK_VERTEX_INPUT_RATE_VERTEX.
-		 *
-		 * @return Un vecteur contenant les descriptions de liaison des entrées de vertex.
-		 */
-		static std::vector<vk::VertexInputBindingDescription> GetBindingDescriptions();
+			/**
+			 * @brief Structure responsable de la construction d'un modï¿½le 3D.
+			 */
+			struct Builder
+			{
+				std::vector<Vertex>   vertices{}; /**< Vecteur contenant les vertices du modï¿½le. */
+				std::vector<uint32_t> indices{};  /**< Vecteur contenant les indices des vertices. */
 
-		/**
-		 * @brief Obtient les descriptions d'attribut des entrées de vertex.
-		 *
-		 * Cette fonction retourne les descriptions d'attribut des entrées de vertex pour le pipeline de rendu.
-		 * Elle crée un vecteur de descriptions d'attribut et y ajoute des descriptions pour chaque attribut de la structure Vertex.
-		 * Chaque description contient l'index de liaison, l'emplacement, le format de données et le décalage de l'attribut correspondant dans la structure Vertex.
-		 *
-		 * @return Un vecteur contenant les descriptions d'attribut des entrées de vertex.
-		 */
-		static std::vector<vk::VertexInputAttributeDescription> GetAttributeDescriptions();
+				/**
+				 * @brief Charge un modï¿½le ï¿½ partir d'un fichier au format OBJ.
+				 *
+				 * Cette fonction charge un modï¿½le ï¿½ partir d'un fichier au format OBJ.
+				 * Elle utilise la bibliothï¿½que tinyobjloader pour lire le fichier et extraire les attributs des vertices tels que la position, la couleur, la normale et les coordonnï¿½es de texture.
+				 * Les vertices sont stockï¿½s dans le vecteur 'vertices' de l'objet LveModel::Builder, tandis que les indices des vertices sont stockï¿½s dans le vecteur 'indices'.
+				 * Les vertices sont comparï¿½s pour dï¿½tecter les doublons et les indices sont ajustï¿½s en consï¿½quence pour assurer l'unicitï¿½ des vertices.
+				 *
+				 * @param _filepath Le chemin du fichier du modï¿½le.
+				 * @throws std::runtime_error Si une erreur survient lors du chargement du modï¿½le.
+				 */
+				void LoadModel(const std::string& _filepath);
+			};
 
-		bool operator==(const Vertex& _other) const {
-			return position == _other.position && color == _other.color && normal == _other.normal && uv == _other.uv;
-		}
+
+			/**
+			 * @brief Constructeur de la classe LveModel.
+			 *
+			 * Construit un modï¿½le 3D ï¿½ partir des donnï¿½es fournies par le builder.
+			 *
+			 * @param _lveDevice Rï¿½fï¿½rence vers l'objet LveDevice utilisï¿½ pour la crï¿½ation du modï¿½le.
+			 * @param _builder Rï¿½fï¿½rence vers l'objet Builder contenant les donnï¿½es du modï¿½le.
+			 */
+			LveModel(LveDevice& _lveDevice, const Builder& _builder);
+
+			/**
+			 * @brief Destructeur de la classe LveModel.
+			 */
+			~LveModel();
+
+			/**
+			 * @brief Constructeur de copie supprimï¿½.
+			 *
+			 * Le constructeur de copie de la classe LveModel est supprimï¿½ pour empï¿½cher la duplication d'instances de modï¿½le.
+			 */
+			LveModel(const LveModel&) = delete;
+
+			/**
+			 * @brief Opï¿½rateur d'affectation supprimï¿½.
+			 *
+			 * L'opï¿½rateur d'affectation de la classe LveModel est supprimï¿½ pour empï¿½cher l'affectation d'une instance de modï¿½le ï¿½ une autre.
+			 */
+			LveModel operator=(const LveModel&) = delete;
+
+
+			/**
+			 * @brief Crï¿½e un modï¿½le ï¿½ partir d'un fichier.
+			 *
+			 * Cette fonction statique crï¿½e un modï¿½le ï¿½ partir d'un fichier en utilisant un objet LveDevice et un chemin de fichier donnï¿½s.
+			 * Elle charge d'abord le modï¿½le ï¿½ l'aide du constructeur Builder, puis affiche le nombre de vertices chargï¿½s.
+			 * Enfin, elle crï¿½e un modï¿½le unique ï¿½ partir de l'objet LveDevice et du constructeur Builder, puis le retourne.
+			 *
+			 * @param _device L'objet LveDevice utilisï¿½ pour crï¿½er le modï¿½le.
+			 * @param _filepath Le chemin du fichier ï¿½ partir duquel charger le modï¿½le.
+			 * @return Un pointeur unique vers le modï¿½le crï¿½ï¿½.
+			 */
+			static std::unique_ptr<LveModel> CreateModelFromFile(LveDevice& _device, const std::string& _filepath);
+
+			/**
+			 * @brief Lie les tampons de vertex et d'index au tampon de commande spï¿½cifiï¿½.
+			 *
+			 * Cette fonction lie les tampons de vertex et d'index au tampon de commande spï¿½cifiï¿½ pour le rendu ultï¿½rieur.
+			 * Si un tampon d'index est prï¿½sent, il est ï¿½galement liï¿½ au tampon de commande avec le type d'index spï¿½cifiï¿½.
+			 *
+			 * @param _commandBuffer Le tampon de commande auquel lier les tampons de vertex et d'index.
+			 */
+			void Bind(vk::CommandBuffer _commandBuffer) const;
+
+			/**
+			 * @brief Dessine les primitives gï¿½omï¿½triques ï¿½ l'aide du tampon de commande spï¿½cifiï¿½.
+			 *
+			 * Cette fonction dessine les primitives gï¿½omï¿½triques ï¿½ l'aide du tampon de commande spï¿½cifiï¿½.
+			 * Si un tampon d'index est prï¿½sent, la fonction utilise vkCmdDrawIndexed pour dessiner les primitives indexï¿½es. Sinon, elle utilise vkCmdDraw pour dessiner les primitives non indexï¿½es.
+			 *
+			 * @param _commandBuffer Le tampon de commande utilisï¿½ pour dessiner les primitives gï¿½omï¿½triques.
+			 */
+			void Draw(vk::CommandBuffer _commandBuffer) const;
+
+		private:
+			/**
+			 * @brief Crï¿½e le tampon de vertex.
+			 *
+			 * Cette fonction crï¿½e le tampon de vertex ï¿½ partir des donnï¿½es de vertex fournies.
+			 * Elle calcule la taille du tampon en fonction du nombre de vertices et de leur taille individuelle, puis crï¿½e un tampon de transfert de mï¿½moire visible par l'hï¿½te pour copier les donnï¿½es de vertex.
+			 * Les donnï¿½es de vertex sont ensuite copiï¿½es dans le tampon de transfert, puis transfï¿½rï¿½es vers un tampon de mï¿½moire local du pï¿½riphï¿½rique pour une utilisation efficace pendant le rendu.
+			 *
+			 * @param _vertices Les donnï¿½es de vertex ï¿½ utiliser pour crï¿½er le tampon.
+			 */
+			void CreateVertexBuffer(const std::vector<Vertex>& _vertices);
+
+
+			/**
+			 * @brief Crï¿½e le tampon d'index.
+			 *
+			 * Cette fonction crï¿½e le tampon d'index ï¿½ partir des indices fournis.
+			 * Elle dï¿½termine d'abord si des indices sont prï¿½sents. Si aucun indice n'est prï¿½sent, la fonction se termine.
+			 * Sinon, elle calcule la taille du tampon en fonction du nombre d'indices et de leur taille individuelle, puis crï¿½e un tampon de transfert de mï¿½moire visible par l'hï¿½te pour copier les donnï¿½es d'indices.
+			 * Les donnï¿½es d'indices sont ensuite copiï¿½es dans le tampon de transfert, puis transfï¿½rï¿½es vers un tampon de mï¿½moire local du pï¿½riphï¿½rique pour une utilisation efficace pendant le rendu.
+			 *
+			 * @param _indices Les indices ï¿½ utiliser pour crï¿½er le tampon.
+			 */
+			void CreateIndexBuffer(const std::vector<uint32_t>& _indices);
+
+			LveDevice& lveDevice; /**< Rï¿½fï¿½rence vers l'objet LveDevice utilisï¿½ pour la crï¿½ation du modï¿½le. */
+
+			std::unique_ptr<LveBuffer> vertexBuffer; /**< Pointeur unique vers le tampon de vertex du modï¿½le. */
+			uint32_t                   vertexCount;  /**< Nombre de vertices dans le tampon de vertex. */
+
+			bool                       hasIndexBuffer = false; /**< Indique si le modï¿½le possï¿½de un tampon d'indices. */
+			std::unique_ptr<LveBuffer> indexBuffer; /**< Pointeur unique vers le tampon d'indices du modï¿½le. */
+			uint32_t                   indexCount; /**< Nombre d'indices dans le tampon d'indices. */
 	};
-
-	struct Builder {
-		std::vector<Vertex> vertices{};
-		std::vector<uint32_t> indices{};
-
-		/**
-		 * @brief Charge un modèle à partir d'un fichier.
-		 *
-		 * Cette fonction charge un modèle à partir d'un fichier au format OBJ. Elle utilise la bibliothèque tinyobjloader pour lire le fichier.
-		 * Les attributs des vertices tels que la position, la couleur, la normale et les coordonnées de texture sont extraits du fichier et utilisés pour créer les vertices du modèle.
-		 * Les vertices sont stockés dans le vecteur 'vertices' de l'objet LveModel::Builder, tandis que les indices des vertices sont stockés dans le vecteur 'indices'.
-		 * Les vertices sont comparés pour détecter les doublons et les indices sont ajustés en conséquence pour assurer l'unicité des vertices.
-		 *
-		 * @param _filepath Le chemin du fichier du modèle.
-		 * @throws std::runtime_error Si une erreur survient lors du chargement du modèle.
-		 */
-		void LoadModel(LveDevice& _device, const std::string& _filepath);
-	};
-
-	LveModel(LveDevice& _lveDevice, const LveModel::Builder &_builder);
-	~LveModel();
-
-	LveModel(const LveModel&) = delete;
-	LveModel operator=(const LveModel&) = delete;
-
-
-	/**
-	 * @brief Crée un modèle à partir d'un fichier.
-	 *
-	 * Cette fonction statique crée un modèle à partir d'un fichier en utilisant un objet LveDevice et un chemin de fichier donnés.
-	 * Elle charge d'abord le modèle à l'aide du constructeur Builder, puis affiche le nombre de vertices chargés.
-	 * Enfin, elle crée un modèle unique à partir de l'objet LveDevice et du constructeur Builder, puis le retourne.
-	 *
-	 * @param _device L'objet LveDevice utilisé pour créer le modèle.
-	 * @param _filepath Le chemin du fichier à partir duquel charger le modèle.
-	 * @return Un pointeur unique vers le modèle créé.
-	 */
-	static std::unique_ptr<LveModel> CreateModelFromFile(LveDevice& _device, const std::string& _filepath);
-
-	/**
-	 * @brief Lie les tampons de vertex et d'index au tampon de commande spécifié.
-	 *
-	 * Cette fonction lie les tampons de vertex et d'index au tampon de commande spécifié pour le rendu ultérieur.
-	 * Si un tampon d'index est présent, il est également lié au tampon de commande avec le type d'index spécifié.
-	 *
-	 * @param _commandBuffer Le tampon de commande auquel lier les tampons de vertex et d'index.
-	 */
-	void Bind(vk::CommandBuffer _commandBuffer);
-
-	/**
-	 * @brief Dessine les primitives géométriques à l'aide du tampon de commande spécifié.
-	 *
-	 * Cette fonction dessine les primitives géométriques à l'aide du tampon de commande spécifié.
-	 * Si un tampon d'index est présent, la fonction utilise vkCmdDrawIndexed pour dessiner les primitives indexées. Sinon, elle utilise vkCmdDraw pour dessiner les primitives non indexées.
-	 *
-	 * @param _commandBuffer Le tampon de commande utilisé pour dessiner les primitives géométriques.
-	 */
-	void Draw(vk::CommandBuffer _commandBuffer);
-
-private:
-	/**
-	 * @brief Crée le tampon de vertex.
-	 *
-	 * Cette fonction crée le tampon de vertex à partir des données de vertex fournies.
-	 * Elle calcule la taille du tampon en fonction du nombre de vertices et de leur taille individuelle, puis crée un tampon de transfert de mémoire visible par l'hôte pour copier les données de vertex.
-	 * Les données de vertex sont ensuite copiées dans le tampon de transfert, puis transférées vers un tampon de mémoire local du périphérique pour une utilisation efficace pendant le rendu.
-	 *
-	 * @param _vertices Les données de vertex à utiliser pour créer le tampon.
-	 */
-	void CreateVertexBuffer(const std::vector<Vertex>& _vertices);
-
-
-	/**
-	 * @brief Crée le tampon d'index.
-	 *
-	 * Cette fonction crée le tampon d'index à partir des indices fournis.
-	 * Elle détermine d'abord si des indices sont présents. Si aucun indice n'est présent, la fonction se termine.
-	 * Sinon, elle calcule la taille du tampon en fonction du nombre d'indices et de leur taille individuelle, puis crée un tampon de transfert de mémoire visible par l'hôte pour copier les données d'indices.
-	 * Les données d'indices sont ensuite copiées dans le tampon de transfert, puis transférées vers un tampon de mémoire local du périphérique pour une utilisation efficace pendant le rendu.
-	 *
-	 * @param _indices Les indices à utiliser pour créer le tampon.
-	 */
-	void CreateIndexBuffer(const std::vector<uint32_t>& _indices);
-
-	LveDevice& lveDevice;
-
-	std::unique_ptr<LveBuffer> vertexBuffer;
-	uint32_t vertexCount;
-
-	bool hasIndexBuffer = false;
-	std::unique_ptr<LveBuffer> indexBuffer;
-	uint32_t indexCount;
-
-};
-
-
 } //lve

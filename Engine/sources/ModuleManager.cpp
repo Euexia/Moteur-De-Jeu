@@ -1,6 +1,9 @@
 #include "ModuleManager.h"
 
-#include "Managers/WindowManager.h"
+#include "Modules/ImGUIModule.h"
+#include "Modules/RHIVulkanModule.h"
+#include "Modules/WindowModule.h"
+#include "Scene/SceneManager.h"
 
 ModuleManager::~ModuleManager()
 {
@@ -12,11 +15,14 @@ void ModuleManager::CreateDefaultModules()
 {
 	//CreateModule<TimeModule>();
 	//CreateModule<InputModule>();
-	CreateModule<WindowManager>();
+	CreateModule<WindowModule>();
+	CreateModule<ImGuiModule>();
+	//CreateModule<RHIVulkanModule>();
 	//CreateModule<AssetModule>();
-	//CreateModule<CameraModule>();
-	//CreateModule<SceneModule>();
+	//CreateModule<CameraManager>();
+	//CreateModule<SceneManager>();
 	//CreateModule<ImGuiModule>();
+	CreateModule<SceneManager>();
 }
 
 void ModuleManager::Init() const

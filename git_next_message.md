@@ -1,3 +1,3 @@
-NEW: Hiérarchie
+END: Fin cleaning
 
-- Hiérarchisation des fichiers .h dans le \includes et .cpp dans le \sources
+- Nettoyage de la plus grande partie du code cpp et h

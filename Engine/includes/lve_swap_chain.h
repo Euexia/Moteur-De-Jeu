@@ -10,274 +10,304 @@
 #include <string>
 #include <vector>
 
-namespace lve {
+namespace lve
+{
+	class LveSwapChain
+	{
+		public:
+			static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-    class LveSwapChain {
-    public:
-        static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+			/**
+			 * @brief Constructeur prenant une rï¿½fï¿½rence ï¿½ un objet LveDevice et une ï¿½tendue windowExtent.
+			 *
+			 * @param _deviceRef Rï¿½fï¿½rence ï¿½ un objet LveDevice.
+			 * @param _windowExtent ï¿½tendue de la fenï¿½tre.
+			 */
+			LveSwapChain(LveDevice& _deviceRef, vk::Extent2D _windowExtent);
 
-        LveSwapChain(LveDevice& deviceRef, vk::Extent2D windowExtent);
-        LveSwapChain(LveDevice& deviceRef, vk::Extent2D extent, std::shared_ptr<LveSwapChain> previous);
-        ~LveSwapChain();
-        void Init();
+			/**
+			 * @brief Constructeur prenant une rï¿½fï¿½rence ï¿½ un objet LveDevice, une ï¿½tendue extent
+			 *        et un pointeur partagï¿½ vers une prï¿½cï¿½dente chaï¿½ne d'ï¿½changes.
+			 *
+			 * @param _deviceRef Rï¿½fï¿½rence ï¿½ un objet LveDevice.
+			 * @param _extent ï¿½tendue de la chaï¿½ne d'ï¿½changes.
+			 * @param _previous Pointeur partagï¿½ vers une prï¿½cï¿½dente chaï¿½ne d'ï¿½changes.
+			 */
+			LveSwapChain(LveDevice& _deviceRef, vk::Extent2D _extent, const std::shared_ptr<LveSwapChain>& _previous);
 
-        LveSwapChain(const LveSwapChain&) = delete;
-        LveSwapChain &operator=(const LveSwapChain&) = delete;
+			/**
+			 * @brief Destructeur.
+			 */
+			~LveSwapChain();
 
-        /**
-         * @brief Obtient le framebuffer correspondant à l'indice spécifié.
-         *
-         * Cette fonction retourne le framebuffer de la swap chain qui correspond à l'indice spécifié.
-         *
-         * @param index L'indice du framebuffer à récupérer.
-         * @return vk::Framebuffer Le framebuffer correspondant à l'indice spécifié.
-         */
-        vk::Framebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
+			/**
+			 * @brief Initialise la chaï¿½ne d'ï¿½changes.
+			 */
+			void Init();
 
-        /**
-         * @brief Obtient le passe de rendu.
-         *
-         * Cette fonction retourne le passe de rendu associé à la swap chain.
-         *
-         * @return vk::RenderPass Le passe de rendu associé à la swap chain.
-         */
-        vk::RenderPass getRenderPass() { return renderPass; }
+			/**
+			 * @brief Constructeur de recopie supprimï¿½.
+			 */
+			LveSwapChain(const LveSwapChain&) = delete;
 
-        /**
-         * @brief Obtient la vue d'image correspondant à l'indice spécifié.
-         *
-         * Cette fonction retourne la vue d'image de la swap chain qui correspond à l'indice spécifié.
-         *
-         * @param index L'indice de la vue d'image à récupérer.
-         * @return vk::ImageView La vue d'image correspondant à l'indice spécifié.
-         */
-        vk::ImageView getImageView(int index) { return swapChainImageViews[index]; }
+			/**
+			 * @brief Opï¿½rateur d'assignation par recopie supprimï¿½.
+			 */
+			LveSwapChain& operator=(const LveSwapChain&) = delete;
 
-        /**
-         * @brief Obtient le nombre d'images dans la swap chain.
-         *
-         * Cette fonction retourne le nombre d'images actuellement présentes dans la swap chain.
-         *
-         * @return size_t Le nombre d'images dans la swap chain.
-         */
-        size_t imageCount() { return swapChainImages.size(); }
+			/**
+			 * @brief Obtient le framebuffer correspondant ï¿½ l'indice spï¿½cifiï¿½.
+			 *
+			 * Cette fonction retourne le framebuffer de la swap chain qui correspond ï¿½ l'indice spï¿½cifiï¿½.
+			 *
+			 * @param _index L'indice du framebuffer ï¿½ rï¿½cupï¿½rer.
+			 * @return vk::Framebuffer Le framebuffer correspondant ï¿½ l'indice spï¿½cifiï¿½.
+			 */
+			vk::Framebuffer GetFrameBuffer(const int _index) const { return swapChainFramebuffers[_index]; }
 
-        /**
-         * @brief Obtient le format d'image de la swap chain.
-         *
-         * Cette fonction retourne le format d'image utilisé par la swap chain.
-         *
-         * @return vk::Format Le format d'image de la swap chain.
-         */
-        vk::Format getSwapChainImageFormat() { return swapChainImageFormat; }
+			/**
+			 * @brief Obtient le passe de rendu.
+			 *
+			 * Cette fonction retourne le passe de rendu associï¿½ ï¿½ la swap chain.
+			 *
+			 * @return vk::RenderPass Le passe de rendu associï¿½ ï¿½ la swap chain.
+			 */
+			vk::RenderPass GetRenderPass() const { return renderPass; }
 
-        /**
-         * @brief Obtient l'étendue de la swap chain.
-         *
-         * Cette fonction retourne l'étendue (largeur et hauteur) de la swap chain.
-         *
-         * @return vk::Extent2D L'étendue de la swap chain.
-         */
-        vk::Extent2D getSwapChainExtent() { return swapChainExtent; }
+			/**
+			 * @brief Obtient la vue d'image correspondant ï¿½ l'indice spï¿½cifiï¿½.
+			 *
+			 * Cette fonction retourne la vue d'image de la swap chain qui correspond ï¿½ l'indice spï¿½cifiï¿½.
+			 *
+			 * @param _index L'indice de la vue d'image ï¿½ rï¿½cupï¿½rer.
+			 * @return vk::ImageView La vue d'image correspondant ï¿½ l'indice spï¿½cifiï¿½.
+			 */
+			vk::ImageView GetImageView(const int _index) const { return swapChainImageViews[_index]; }
 
-        /**
-         * @brief Obtient la largeur de la swap chain.
-         *
-         * Cette fonction retourne la largeur de la swap chain.
-         *
-         * @return uint32_t La largeur de la swap chain.
-         */
-        uint32_t width() { return swapChainExtent.width; }
+			/**
+			 * @brief Obtient le nombre d'images dans la swap chain.
+			 *
+			 * Cette fonction retourne le nombre d'images actuellement prï¿½sentes dans la swap chain.
+			 *
+			 * @return size_t Le nombre d'images dans la swap chain.
+			 */
+			size_t ImageCount() const { return swapChainImages.size(); }
 
-        /**
-         * @brief Obtient la hauteur de la swap chain.
-         *
-         * Cette fonction retourne la hauteur de la swap chain.
-         *
-         * @return uint32_t La hauteur de la swap chain.
-         */
-        uint32_t height() { return swapChainExtent.height; }
+			/**
+			 * @brief Obtient le format d'image de la swap chain.
+			 *
+			 * Cette fonction retourne le format d'image utilisï¿½ par la swap chain.
+			 *
+			 * @return vk::Format Le format d'image de la swap chain.
+			 */
+			vk::Format GetSwapChainImageFormat() const { return swapChainImageFormat; }
 
-        /**
-         * @brief Calcule le rapport d'aspect de l'étendue de la swap chain.
-         *
-         * Cette fonction calcule le rapport d'aspect (largeur/hauteur) de l'étendue de la swap chain.
-         *
-         * @return float Le rapport d'aspect de l'étendue de la swap chain.
-         */
-        float extentAspectRatio() {
-            return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
-        }
+			/**
+			 * @brief Obtient l'ï¿½tendue de la swap chain.
+			 *
+			 * Cette fonction retourne l'ï¿½tendue (largeur et hauteur) de la swap chain.
+			 *
+			 * @return vk::Extent2D L'ï¿½tendue de la swap chain.
+			 */
+			vk::Extent2D GetSwapChainExtent() const { return swapChainExtent; }
 
-        /**
-         * @brief Recherche le format de profondeur adapté.
-         *
-         * Cette fonction recherche le format de profondeur adapté parmi une liste de formats donnée, en tenant compte des caractéristiques spécifiées.
-         *
-         * @return vk::Format Le format de profondeur adapté.
-         */
-        vk::Format findDepthFormat();
+			/**
+			 * @brief Obtient la largeur de la swap chain.
+			 *
+			 * Cette fonction retourne la largeur de la swap chain.
+			 *
+			 * @return uint32_t La largeur de la swap chain.
+			 */
+			uint32_t Width() const { return swapChainExtent.width; }
 
-        /**
-         * @brief Acquiert l'index de l'image suivante dans la chaîne de swaps.
-         *
-         * Cette fonction acquiert l'index de l'image suivante dans la chaîne de swaps.
-         *
-         * @param imageIndex Pointeur vers la variable où stocker l'index de l'image acquise.
-         * @return VkResult Le résultat de l'opération.
-         */
-        vk::Result acquireNextImage(uint32_t* imageIndex);
+			/**
+			 * @brief Obtient la hauteur de la swap chain.
+			 *
+			 * Cette fonction retourne la hauteur de la swap chain.
+			 *
+			 * @return uint32_t La hauteur de la swap chain.
+			 */
+			uint32_t Height() const { return swapChainExtent.height; }
 
-        /**
-         * @brief Soumet les command buffers pour exécution et présente le résultat.
-         *
-         * Cette fonction soumet les command buffers spécifiés pour exécution, attend leur achèvement, puis présente le résultat à l'écran.
-         *
-         * @param buffers Tableau des command buffers à soumettre.
-         * @param imageIndex Pointeur vers l'index de l'image à présenter.
-         * @return VkResult Le résultat de l'opération.
-         */
-        vk::Result submitCommandBuffers(const vk::CommandBuffer* buffers, uint32_t* imageIndex);
+			/**
+			 * @brief Calcule le rapport d'aspect de l'ï¿½tendue de la swap chain.
+			 *
+			 * Cette fonction calcule le rapport d'aspect (largeur/hauteur) de l'ï¿½tendue de la swap chain.
+			 *
+			 * @return float Le rapport d'aspect de l'ï¿½tendue de la swap chain.
+			 */
+			float ExtentAspectRatio() const
+			{
+				return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
+			}
 
-        /**
-         * @brief Compare les formats de profondeur et d'image avec une autre LveSwapChain.
-         *
-         * Cette fonction compare les formats de profondeur et d'image de cette LveSwapChain avec ceux d'une autre LveSwapChain spécifiée.
-         *
-         * @param _swapChain La LveSwapChain avec laquelle comparer les formats.
-         * @return bool True si les formats de profondeur et d'image sont identiques, sinon False.
-         */
-        bool CompareSwapFormats(const LveSwapChain& _swapChain) const {
-            return  _swapChain.swapChainDepthFormat == swapChainDepthFormat && 
-                    _swapChain.swapChainImageFormat == swapChainImageFormat;
-        }
+			/**
+			 * @brief Recherche le format de profondeur adaptï¿½.
+			 *
+			 * Cette fonction recherche le format de profondeur adaptï¿½ parmi une liste de formats donnï¿½e, en tenant compte des caractï¿½ristiques spï¿½cifiï¿½es.
+			 *
+			 * @return vk::Format Le format de profondeur adaptï¿½.
+			 */
+			vk::Format FindDepthFormat() const;
 
-    private:
+			/**
+			 * @brief Acquiert l'index de l'image suivante dans la chaï¿½ne de swaps.
+			 *
+			 * Cette fonction acquiert l'index de l'image suivante dans la chaï¿½ne de swaps.
+			 *
+			 * @param _imageIndex Pointeur vers la variable oï¿½ stocker l'index de l'image acquise.
+			 * @return VkResult Le rï¿½sultat de l'opï¿½ration.
+			 */
+			vk::Result AcquireNextImage(uint32_t* _imageIndex) const;
 
-        /**
-         * @brief Crée la chaîne de swaps.
-         *
-         * Cette fonction crée la chaîne de swaps, qui est utilisée pour la présentation des images à l'écran.
-         * La création de la chaîne de swaps implique la sélection des formats de surface, des modes de présentation et des dimensions appropriés, ainsi que la configuration de divers autres paramètres liés à la présentation.
-         *
-         * @throws std::runtime_error si la création de la chaîne de swaps échoue.
-         */
-        void createSwapChain();
+			/**
+			 * @brief Soumet les command buffers pour exï¿½cution et prï¿½sente le rï¿½sultat.
+			 *
+			 * Cette fonction soumet les command buffers spï¿½cifiï¿½s pour exï¿½cution, attend leur achï¿½vement, puis prï¿½sente le rï¿½sultat ï¿½ l'ï¿½cran.
+			 *
+			 * @param _buffers Tableau des command buffers ï¿½ soumettre.
+			 * @param _imageIndex Pointeur vers l'index de l'image ï¿½ prï¿½senter.
+			 * @return VkResult Le rï¿½sultat de l'opï¿½ration.
+			 */
+			vk::Result SubmitCommandBuffers(const vk::CommandBuffer* _buffers, uint32_t* _imageIndex);
 
-        /**
-         * @brief Crée les vues d'image de la chaîne de swaps.
-         *
-         * Cette fonction crée les vues d'image pour chaque image de la chaîne de swaps.
-         * Chaque vue d'image est associée à une image de la chaîne de swaps et spécifie comment cette image doit être interprétée lorsqu'elle est utilisée comme texture.
-         *
-         * @throws std::runtime_error si la création d'une vue d'image échoue.
-         */
-        void createImageViews();
+			/**
+			 * @brief Compare les formats de profondeur et d'image avec une autre LveSwapChain.
+			 *
+			 * Cette fonction compare les formats de profondeur et d'image de cette LveSwapChain avec ceux d'une autre LveSwapChain spï¿½cifiï¿½e.
+			 *
+			 * @param _swapChain La LveSwapChain avec laquelle comparer les formats.
+			 * @return bool True si les formats de profondeur et d'image sont identiques, sinon False.
+			 */
+			bool CompareSwapFormats(const LveSwapChain& _swapChain) const
+			{
+				return _swapChain.swapChainDepthFormat == swapChainDepthFormat &&
+				       _swapChain.swapChainImageFormat == swapChainImageFormat;
+			}
 
-        /**
-        * @brief Crée les ressources de profondeur pour la chaîne de swaps.
-        *
-        * Cette fonction crée les ressources de profondeur nécessaires pour chaque image de la chaîne de swaps.
-        * Ces ressources de profondeur sont utilisées pour le rendu des scènes en 3D afin de déterminer la profondeur des fragments et gérer la détection des collisions.
-        *
-        * @throws std::runtime_error si la création d'une ressource de profondeur échoue.
-        */
-        void createDepthResources();
+		private:
+			/**
+			 * @brief Crï¿½e la chaï¿½ne de swaps.
+			 *
+			 * Cette fonction crï¿½e la chaï¿½ne de swaps, qui est utilisï¿½e pour la prï¿½sentation des images ï¿½ l'ï¿½cran.
+			 * La crï¿½ation de la chaï¿½ne de swaps implique la sï¿½lection des formats de surface, des modes de prï¿½sentation et des dimensions appropriï¿½s, ainsi que la configuration de divers autres paramï¿½tres liï¿½s ï¿½ la prï¿½sentation.
+			 *
+			 * @throws std::runtime_error si la crï¿½ation de la chaï¿½ne de swaps ï¿½choue.
+			 */
+			void CreateSwapChain();
 
-        /**
-         * @brief Crée la passe de rendu.
-         *
-         * Cette fonction crée la passe de rendu utilisée pour définir comment les données de géométrie sont traitées lors du rendu d'une image.
-         * La passe de rendu définit les attachements de couleur et de profondeur, ainsi que les sous-passes qui décrivent les opérations de rendu à exécuter.
-         *
-         * @throws std::runtime_error si la création de la passe de rendu échoue.
-         */
-        void createRenderPass();
+			/**
+			 * @brief Crï¿½e les vues d'image de la chaï¿½ne de swaps.
+			 *
+			 * Cette fonction crï¿½e les vues d'image pour chaque image de la chaï¿½ne de swaps.
+			 * Chaque vue d'image est associï¿½e ï¿½ une image de la chaï¿½ne de swaps et spï¿½cifie comment cette image doit ï¿½tre interprï¿½tï¿½e lorsqu'elle est utilisï¿½e comme texture.
+			 *
+			 * @throws std::runtime_error si la crï¿½ation d'une vue d'image ï¿½choue.
+			 */
+			void CreateImageViews();
 
-        /**
-         * @brief Crée les tampons de trame.
-         *
-         * Cette fonction crée les tampons de trame qui sont utilisés pour stocker les informations de rendu associées à chaque image de la chaîne de swaps.
-         * Chaque tampon de trame est associé à une image de la chaîne de swaps et est configuré avec les vues d'image et les profondeurs appropriées pour le rendu.
-         *
-         * @throws std::runtime_error si la création d'un tampon de trame échoue.
-         */
-        void createFramebuffers();
+			/**
+			* @brief Crï¿½e les ressources de profondeur pour la chaï¿½ne de swaps.
+			*
+			* Cette fonction crï¿½e les ressources de profondeur nï¿½cessaires pour chaque image de la chaï¿½ne de swaps.
+			* Ces ressources de profondeur sont utilisï¿½es pour le rendu des scï¿½nes en 3D afin de dï¿½terminer la profondeur des fragments et gï¿½rer la dï¿½tection des collisions.
+			*
+			* @throws std::runtime_error si la crï¿½ation d'une ressource de profondeur ï¿½choue.
+			*/
+			void CreateDepthResources();
 
-        /**
-         * @brief Crée les objets de synchronisation.
-         *
-         * Cette fonction crée les objets de synchronisation utilisés pour synchroniser l'exécution des opérations de rendu avec la présentation des images.
-         * Ces objets comprennent des sémaphores pour la synchronisation entre les différentes étapes du pipeline graphique, ainsi que des clôtures de barrière pour la synchronisation entre le CPU et le GPU.
-         *
-         * @throws std::runtime_error si la création d'un objet de synchronisation échoue.
-         */
-        void createSyncObjects();
+			/**
+			 * @brief Crï¿½e la passe de rendu.
+			 *
+			 * Cette fonction crï¿½e la passe de rendu utilisï¿½e pour dï¿½finir comment les donnï¿½es de gï¿½omï¿½trie sont traitï¿½es lors du rendu d'une image.
+			 * La passe de rendu dï¿½finit les attachements de couleur et de profondeur, ainsi que les sous-passes qui dï¿½crivent les opï¿½rations de rendu ï¿½ exï¿½cuter.
+			 *
+			 * @throws std::runtime_error si la crï¿½ation de la passe de rendu ï¿½choue.
+			 */
+			void CreateRenderPass();
 
-        // Helper functions
+			/**
+			 * @brief Crï¿½e les tampons de trame.
+			 *
+			 * Cette fonction crï¿½e les tampons de trame qui sont utilisï¿½s pour stocker les informations de rendu associï¿½es ï¿½ chaque image de la chaï¿½ne de swaps.
+			 * Chaque tampon de trame est associï¿½ ï¿½ une image de la chaï¿½ne de swaps et est configurï¿½ avec les vues d'image et les profondeurs appropriï¿½es pour le rendu.
+			 *
+			 * @throws std::runtime_error si la crï¿½ation d'un tampon de trame ï¿½choue.
+			 */
+			void CreateFrameBuffers();
 
-        /**
-         * @brief Choisissez le format de surface de la chaîne de swaps.
-         *
-         * Cette fonction choisit le format de surface de la chaîne de swaps en parcourant les formats disponibles et en recherchant un format spécifique (B8G8R8A8_SRGB) avec un espace colorimétrique compatible (VK_COLOR_SPACE_SRGB_NONLINEAR_KHR).
-         * Si un tel format est trouvé, il est renvoyé. Sinon, le premier format disponible est renvoyé par défaut.
-         *
-         * @param availableFormats Les formats de surface disponibles.
-         * @return Le format de surface choisi.
-         */
-        vk::SurfaceFormatKHR chooseSwapSurfaceFormat(
-            const std::vector<vk::SurfaceFormatKHR>& availableFormats);
+			/**
+			 * @brief Crï¿½e les objets de synchronisation.
+			 *
+			 * Cette fonction crï¿½e les objets de synchronisation utilisï¿½s pour synchroniser l'exï¿½cution des opï¿½rations de rendu avec la prï¿½sentation des images.
+			 * Ces objets comprennent des sï¿½maphores pour la synchronisation entre les diffï¿½rentes ï¿½tapes du pipeline graphique, ainsi que des clï¿½tures de barriï¿½re pour la synchronisation entre le CPU et le GPU.
+			 *
+			 * @throws std::runtime_error si la crï¿½ation d'un objet de synchronisation ï¿½choue.
+			 */
+			void CreateSyncObjects();
 
-        /**
-         * @brief Choisissez le mode de présentation de la chaîne de swaps.
-         *
-         * Cette fonction choisit le mode de présentation de la chaîne de swaps en parcourant les modes de présentation disponibles et en recherchant un mode spécifique (VK_PRESENT_MODE_IMMEDIATE_KHR) qui offre une présentation immédiate sans attente de synchronisation verticale (V-Sync).
-         * Si un tel mode est trouvé, il est renvoyé. Sinon, le mode de présentation FIFO (VK_PRESENT_MODE_FIFO_KHR) avec synchronisation verticale est renvoyé par défaut.
-         *
-         * @param availablePresentModes Les modes de présentation disponibles.
-         * @return Le mode de présentation choisi.
-         */
-        vk::PresentModeKHR chooseSwapPresentMode(
-            const std::vector<vk::PresentModeKHR>& availablePresentModes);
+			// Helper functions
 
-        /**
-         * @brief Choisissez l'étendue de la chaîne de swaps.
-         *
-         * Cette fonction choisit l'étendue de la chaîne de swaps en se basant sur les capacités de la surface de rendu.
-         * Si l'étendue actuelle est déjà définie dans les capacités de la surface, elle est retournée directement.
-         * Sinon, une étendue appropriée est calculée en fonction de la taille de la fenêtre et des contraintes minimales et maximales spécifiées dans les capacités de la surface.
-         *
-         * @param capabilities Les capacités de la surface de rendu.
-         * @return L'étendue de la chaîne de swaps choisie.
-         */
-        vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
+			/**
+			 * @brief Choisissez le format de surface de la chaï¿½ne de swaps.
+			 *
+			 * Cette fonction choisit le format de surface de la chaï¿½ne de swaps en parcourant les formats disponibles et en recherchant un format spï¿½cifique (B8G8R8A8_SRGB) avec un espace colorimï¿½trique compatible (VK_COLOR_SPACE_SRGB_NONLINEAR_KHR).
+			 * Si un tel format est trouvï¿½, il est renvoyï¿½. Sinon, le premier format disponible est renvoyï¿½ par dï¿½faut.
+			 *
+			 * @param _availableFormats Les formats de surface disponibles.
+			 * @return Le format de surface choisi.
+			 */
+			static vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(
+				const std::vector<vk::SurfaceFormatKHR>& _availableFormats);
 
-        void createTextureSampler();
+			/**
+			 * @brief Choisissez le mode de prï¿½sentation de la chaï¿½ne de swaps.
+			 *
+			 * Cette fonction choisit le mode de prï¿½sentation de la chaï¿½ne de swaps en parcourant les modes de prï¿½sentation disponibles et en recherchant un mode spï¿½cifique (VK_PRESENT_MODE_IMMEDIATE_KHR) qui offre une prï¿½sentation immï¿½diate sans attente de synchronisation verticale (V-Sync).
+			 * Si un tel mode est trouvï¿½, il est renvoyï¿½. Sinon, le mode de prï¿½sentation FIFO (VK_PRESENT_MODE_FIFO_KHR) avec synchronisation verticale est renvoyï¿½ par dï¿½faut.
+			 *
+			 * @param _availablePresentModes Les modes de prï¿½sentation disponibles.
+			 * @return Le mode de prï¿½sentation choisi.
+			 */
+			static vk::PresentModeKHR ChooseSwapPresentMode(
+				const std::vector<vk::PresentModeKHR>& _availablePresentModes);
 
-        vk::Format swapChainImageFormat;
-        vk::Format swapChainDepthFormat;
-        vk::Extent2D swapChainExtent;
+			/**
+			 * @brief Choisissez l'ï¿½tendue de la chaï¿½ne de swaps.
+			 *
+			 * Cette fonction choisit l'ï¿½tendue de la chaï¿½ne de swaps en se basant sur les capacitï¿½s de la surface de rendu.
+			 * Si l'ï¿½tendue actuelle est dï¿½jï¿½ dï¿½finie dans les capacitï¿½s de la surface, elle est retournï¿½e directement.
+			 * Sinon, une ï¿½tendue appropriï¿½e est calculï¿½e en fonction de la taille de la fenï¿½tre et des contraintes minimales et maximales spï¿½cifiï¿½es dans les capacitï¿½s de la surface.
+			 *
+			 * @param _capabilities Les capacitï¿½s de la surface de rendu.
+			 * @return L'ï¿½tendue de la chaï¿½ne de swaps choisie.
+			 */
+			vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& _capabilities) const;
 
-        std::vector<vk::Framebuffer> swapChainFramebuffers;
-        vk::RenderPass renderPass;
+			vk::Format   swapChainImageFormat; /**< Format des images de la chaï¿½ne d'ï¿½changes. */
+			vk::Format   swapChainDepthFormat; /**< Format de profondeur de la chaï¿½ne d'ï¿½changes. */
+			vk::Extent2D swapChainExtent;      /**< ï¿½tendue de la chaï¿½ne d'ï¿½changes. */
 
-        std::vector<vk::Image> depthImages;
-        std::vector<vk::DeviceMemory> depthImageMemorys;
-        std::vector<vk::ImageView> depthImageViews;
-        std::vector<vk::Image> swapChainImages;
-        std::vector<vk::ImageView> swapChainImageViews;
+			std::vector<vk::Framebuffer> swapChainFramebuffers;
+			/**< Tableau des tampons de trame de la chaï¿½ne d'ï¿½changes. */
+			vk::RenderPass renderPass; /**< Passe de rendu de la chaï¿½ne d'ï¿½changes. */
 
-        LveDevice& lveDevice;
-        vk::Extent2D windowExtent;
+			std::vector<vk::Image> depthImages; /**< Tableau des images de profondeur. */
+			std::vector<vk::DeviceMemory> depthImageMemorys; /**< Tableau de la mï¿½moire des images de profondeur. */
+			std::vector<vk::ImageView> depthImageViews; /**< Tableau des vues des images de profondeur. */
+			std::vector<vk::Image> swapChainImages; /**< Tableau des images de la chaï¿½ne d'ï¿½changes. */
+			std::vector<vk::ImageView> swapChainImageViews; /**< Tableau des vues des images de la chaï¿½ne d'ï¿½changes. */
 
-        vk::SwapchainKHR swapChain;
-        std::shared_ptr<LveSwapChain> oldSwapChain;
+			LveDevice&   lveDevice;    /**< Rï¿½fï¿½rence ï¿½ l'objet LveDevice associï¿½. */
+			vk::Extent2D windowExtent; /**< ï¿½tendue de la fenï¿½tre. */
 
-        std::vector<vk::Semaphore> imageAvailableSemaphores;
-        std::vector<vk::Semaphore> renderFinishedSemaphores;
-        std::vector<vk::Fence> inFlightFences;
-        std::vector<vk::Fence> imagesInFlight;
-        size_t currentFrame = 0;
-    };
+			vk::SwapchainKHR              swapChain;    /**< Chaï¿½ne d'ï¿½changes Vulkan. */
+			std::shared_ptr<LveSwapChain> oldSwapChain; /**< Ancienne chaï¿½ne d'ï¿½changes. */
 
-}  // namespace lve
+			std::vector<vk::Semaphore> imageAvailableSemaphores; /**< Sï¿½maphores disponibles pour les images. */
+			std::vector<vk::Semaphore> renderFinishedSemaphores; /**< Sï¿½maphores indiquant la fin du rendu. */
+			std::vector<vk::Fence>     inFlightFences; /**< Barriï¿½res d'attente pour la synchronisation. */
+			std::vector<vk::Fence>     imagesInFlight; /**< Barriï¿½res pour les images en cours de traitement. */
+			size_t                     currentFrame = 0; /**< Indice du cadre actuel. */
+	};
+} // namespace lve

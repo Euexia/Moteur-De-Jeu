@@ -1,16 +1,17 @@
 #pragma once
 
+#include <glm.hpp>
 #include <string>
 #include <vector>
-#include <glm.hpp>
 #include "Component.h"
+#include "lve_window.h"
 
-enum class LayerType {
+enum class LayerType
+{
 	Normal,
 	HUD,
 	Background
 };
-
 
 class Component;
 
@@ -18,115 +19,179 @@ class Transform;
 
 class GameObject
 {
-public:
-	using id_t = unsigned int;
-	GameObject();
-	GameObject(id_t _id) : id(_id){}
-	~GameObject();
+	public:
+		using id_t = unsigned int;
+		GameObject();
 
-	inline std::string GetName() const { return name; }
-	inline void SetName(const std::string& _newName) { name = _newName; }
-
-	Transform* GetTransform() const;
-
-	glm::vec3 GetPosition() const;
-	void SetPosition(glm::vec3 _newPosition);
-
-	glm::vec3 GetScale() const;
-	void SetScale(glm::vec3 _newScale);
-
-	float GetRotation() const;
-	void SetRotation(float _newRotation);
-
-	inline void SetActive(const bool& _state) { isActive = _state; }
-	inline bool GetActive() const { return isActive; }
-
-	inline bool GetVisible() const { return isVisible; }
-	inline void SetVisible(const bool& _state) { isVisible = _state; }
-
-	inline void SetActiveAndVisible(const bool& _state) { isActive = _state; isVisible = _state; }
-
-	inline LayerType GetLayer() const { return layerType; }
-	inline void SetLayer(const LayerType& _layerType) { layerType = _layerType; }
-
-	id_t GetId() { return id; }
-
-	static GameObject CreateGameObject() {
-		static id_t currentId = 0;
-		return GameObject{ currentId++ };
-	}
-
-	void AddComponent(Component* _component);
-
-	template<typename T>
-	T* CreateComponent()
-	{
-		T* component = new T();
-		component->SetOwner(this);
-		components.push_back(component);
-		return component;
-	}
-
-	inline std::vector<Component*> GetComponents() { return components; }
-
-	template<typename T>
-	T* GetComponent() {
-		for (size_t i = 0; i < components.size(); i++) {
-			// VÈrifie si le composant est un Component
-			T* componentResult = dynamic_cast<T*>(components[i]);
-			if (componentResult) {
-				return componentResult; // Renvoie le Component trouvÈ
-			}
+		GameObject(const id_t _id) : id(_id)
+		{
 		}
-		return nullptr; // Renvoie nullptr si aucun Component n'est trouvÈ
-	}
 
-	template<typename T>
-	std::vector<T*> GetComponentsByType() {
-		std::vector<T*> componentsByType;
-		for (size_t i = 0; i < components.size(); i++) {
-			// VÈrifie si le composant est un Component
-			T* componentResult = dynamic_cast<T*>(components[i]);
-			if (componentResult) {
-				componentsByType.push_back(componentResult); // Ajout le Component trouvÈ
-			}
+		~GameObject();
+
+		[[nodiscard]] std::string GetName() const { return name; }
+		void                      SetName(const std::string& _newName) { name = _newName; }
+
+		[[nodiscard]] Transform* GetTransform() const;
+
+		[[nodiscard]] glm::vec3 GetPosition() const;
+		void                    SetPosition(glm::vec3 _newPosition) const;
+
+		[[nodiscard]] glm::vec3 GetScale() const;
+		void                    SetScale(glm::vec3 _newScale) const;
+
+		[[nodiscard]] float GetRotation() const;
+		void                SetRotation(float _newRotation) const;
+
+		void               SetActive(const bool& _state) { isActive = _state; }
+		[[nodiscard]] bool GetActive() const { return isActive; }
+
+		[[nodiscard]] bool GetVisible() const { return isVisible; }
+		void               SetVisible(const bool& _state) { isVisible = _state; }
+
+		void SetActiveAndVisible(const bool& _state)
+		{
+			isActive  = _state;
+			isVisible = _state;
 		}
-		return componentsByType;
-	}
 
-	template<typename T>
-	T* GetComponentByName(const std::string& _name) {
-		std::vector<T*> componentsByType = GetComponentsByType<T>();
-		for (size_t i = 0; i < componentsByType.size(); i++) {
-			// VÈrifie si le composant est un Component
-			T* componentResult = dynamic_cast<T*>(componentsByType[i]);
-			if (componentResult && static_cast<Component*>(componentResult)->GetName() == _name) {
-				return componentResult; // Renvoie le Component trouvÈ
-			}
+		[[nodiscard]] LayerType GetLayer() const { return layerType; }
+		void                    SetLayer(const LayerType& _layerType) { layerType = _layerType; }
+
+		std::vector<GameObject*> FindChildrenByName(const std::string& _name) const;
+		std::vector<GameObject*> children;
+
+		const std::vector<GameObject*>& GetChildren() const
+		{
+			return children;
 		}
-		return nullptr; // Renvoie nullptr si aucun Component n'est trouvÈ
-	}
 
-	void RemoveComponent(Component* _component);
+		[[nodiscard]] id_t GetId() const { return id; }
 
-	virtual void Start();
-	void Physics(const float& _delta) const;
-	void Update(const float& _delta) const;
-	/*void Render(sf::RenderWindow* _window) const;*/
+		static GameObject CreateGameObject()
+		{
+			static id_t current_id = 0;
+			return GameObject{current_id++};
+		}
 
-protected:
-	std::string name = "GameObject";
-	std::vector<Component*> components;
+		void AddComponent(Component* _component);
 
-	Transform* transform = nullptr;
-	//Quel est le layer du gameObject
-	LayerType layerType = LayerType::Normal;
+		template <typename T>
+		T* CreateComponent()
+		{
+			T* component = new T();
+			component->SetOwner(this);
+			components.push_back(component);
+			return component;
+		}
 
-	//Plus c'est proche de 1, plus le GameObject sera proche de l'Ècran
-	float depth = 0.f;
+		std::vector<Component*> GetComponents() { return components; }
 
-	bool isActive = true;
-	bool isVisible = true;
+		template <typename T>
+		T* GetComponent()
+		{
+			for (size_t i = 0; i < components.size(); i++)
+			{
+				// V√©rifie si le composant est un Component
+				if (T* component_result = dynamic_cast<T*>(components[i])) return component_result;
+				// Renvoie le Component trouv√©
+			}
+			return nullptr; // Renvoie nullptr si aucun Component n'est trouv√©
+		}
 
-	id_t id;
+		template <typename T>
+		std::vector<T*> GetComponentsByType()
+		{
+			std::vector<T*> components_by_type;
+			for (size_t i = 0; i < components.size(); i++)
+			{
+				// V√©rifie si le composant est un Component
+				if (T* component_result = dynamic_cast<T*>(components[i])) components_by_type.
+					push_back(component_result); // Ajout le Component trouv√©
+			}
+			return components_by_type;
+		}
+
+		template <typename T>
+		T* GetComponentByName(const std::string& _name)
+		{
+			std::vector<T*> components_by_type = GetComponentsByType<T>();
+			for (size_t i = 0; i < components_by_type.size(); i++)
+			{
+				// V√©rifie si le composant est un Component
+				T* component_result = dynamic_cast<T*>(components_by_type[i]);
+				if (component_result && static_cast<Component*>(component_result)->GetName() == _name)
+					return
+						component_result; // Renvoie le Component trouv√©
+			}
+			return nullptr; // Renvoie nullptr si aucun Component n'est trouv√©
+		}
+
+		void RemoveComponent(Component* _component);
+
+		/**
+					* @brief Initialise le module.
+					*/
+		virtual void Init();
+
+		/**
+		 * @brief D√©marre le module.
+		 */
+		virtual void Start();
+
+		/**
+		 * @brief Effectue une mise √† jour fixe du module.
+		 */
+		virtual void FixedUpdate(const float& _deltaTime) const;
+
+		/**
+		 * @brief Met √† jour le module.
+		 */
+		virtual void Update(const float& _deltaTime) const;
+
+		/**
+		 * @brief Fonction pr√©-rendu du module.
+		 */
+		virtual void PreRender();
+
+		/**
+		 * @brief Rendu du module.
+		 */
+		virtual void Render(lve::LveWindow* _window) const;
+
+		/**
+		 * @brief Rendu de l'interface graphique du module.
+		 */
+		virtual void RenderGui();
+
+		/**
+		 * @brief Fonction post-rendu du module.
+		 */
+		virtual void PostRender();
+
+		/**
+		 * @brief Lib√®re les ressources utilis√©es par le module.
+		 */
+		virtual void Release();
+
+		/**
+		 * @brief Finalise le module.
+		 */
+		virtual void Finalize();
+
+	protected:
+		std::string             name = "GameObject";
+		std::vector<Component*> components;
+
+		Transform* transform = nullptr;
+		//Quel est le layer du gameObject
+		LayerType layerType = LayerType::Normal;
+
+		//Plus c'est proche de 1, plus le GameObject sera proche de l'√©cran
+		float depth = 0.f;
+
+		bool isActive  = true;
+		bool isVisible = true;
+
+		id_t id;
 };

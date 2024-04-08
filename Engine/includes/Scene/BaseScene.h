@@ -1,69 +1,125 @@
 #pragma once
 
-// std
 #include <string>
-
-// engine
+#include "lve_window.h"
 #include "GameObject/GameObject.h"
 
-class BaseScene final
+class BaseScene
 {
-public:
-	explicit BaseScene(const std::string& fileName);
-	~BaseScene() = default;
+	public:
+		explicit BaseScene(const std::string& _fileName);
+		~BaseScene() = default;
 
-	BaseScene(const BaseScene&) = delete;
-	BaseScene& operator=(const BaseScene&) = delete;
+		BaseScene(const BaseScene&)            = delete;
+		BaseScene& operator=(const BaseScene&) = delete;
 
-	void Initialize();
-	void PostInitialize();
-	void Destroy();
-	void FixedUpdate();
-	void Update();
-	void LateUpdate();
-	void Render();
+		/**
+				* @brief Initialise le module.
+				*/
+		virtual void Init();
 
-	bool IsInitialized() const;
+		/**
+		 * @brief Démarre le module.
+		 */
+		virtual void Start();
 
-	void SetName(const std::string& name);
-	std::string GetName() const;
-	std::string GetDefaultRelativeFilePath() const;
-	std::string GetRelativeFilePath() const;
-	std::string GetShortRelativeFilePath() const;
-	// Creates a new file at the specified location and copies this scene's data in to it
-	// Always copies saved file if exists, old files can optionally be deleted
-	bool SetFileName(const std::string& fileName, bool bDeletePreviousFiles);
-	std::string GetFileName() const;
+		/**
+		 * @brief Effectue une mise à jour fixe du module.
+		 */
+		virtual void FixedUpdate(const float& _deltaTime);
 
-	bool IsUsingSaveFile() const;
+		/**
+		 * @brief Met à jour le module.
+		 */
+		virtual void Update(const float& _deltaTime);
 
-	void DeleteSaveFiles();
+		/**
+		 * @brief Fonction pré-rendu du module.
+		 */
+		virtual void PreRender();
 
-	std::vector<GameObject*>& GetRootObjects();
+		/**
+		 * @brief Rendu du module.
+		 */
+		virtual void Render(lve::LveWindow* _lveWindow);
 
-	GameObject* AddRootObject(GameObject* gameObject);
-	GameObject* AddRootObjectImmediate(GameObject* gameObject);
-	GameObject* AddChildObject(GameObject* parent, GameObject* child);
-	GameObject* AddChildObjectImmediate(GameObject* parent, GameObject* child);
-	GameObject* AddSiblingObjectImmediate(GameObject* gameObject, GameObject* newSibling);
+		/**
+		 * @brief Rendu de l'interface graphique du module.
+		 */
+		virtual void RenderGui();
 
-	void SetRootObjectIndex(GameObject* rootObject, uint32_t newIndex);
+		/**
+		 * @brief Fonction post-rendu du module.
+		 */
+		virtual void PostRender();
 
+		/**
+		 * @brief Libère les ressources utilisées par le module.
+		 */
+		virtual void Release();
 
-	void RemoveAllObjects(); // Removes and destroys all objects in scene at end of frame
-	void RemoveAllObjectsImmediate();  // Removes and destroys all objects in scene
-	void RemoveAllEditorObjectsImmediate();
-	void RemoveObject(const GameObject::id_t& gameObjectID, bool bDestroy);
-	void RemoveObject(GameObject* gameObject, bool bDestroy);
-	void RemoveObjectImmediate(const GameObject::id_t& gameObjectID, bool bDestroy);
-	void RemoveObjectImmediate(GameObject* gameObject, bool bDestroy);
-	void RemoveObjects(const std::vector<GameObject::id_t>& gameObjects, bool bDestroy);
-	void RemoveObjects(const std::vector<GameObject*>& gameObjects, bool bDestroy);
-	void RemoveObjectsImmediate(const std::vector<GameObject::id_t>& gameObjects, bool bDestroy);
-	void RemoveObjectsImmediate(const std::vector<GameObject*>& gameObjects, bool bDestroy);
-
-	GameObject::id_t FirstObjectWithTag(const std::string& tag);
+		/**
+		 * @brief Finalise le module.
+		 */
+		virtual void Finalize();
 
 
+		GameObject*              CreateGameObject();
+		void                     DestroyGameObject(const GameObject* _gameObject);
+		GameObject*              GetGameObjectById(const GameObject::id_t& _gameObjectId) const;
+		std::vector<GameObject*> FindGameObjectsByName(const std::string& _name) const;
+
+
+		bool IsInitialized() const;
+
+		void        SetName(const std::string& _name);
+		std::string GetName() const;
+		std::string GetDefaultRelativeFilePath() const;
+		bool        SetFileName(const std::string& _fileName, bool _bDeletePreviousFiles) const;
+		bool        FileExists(const std::string& _filePath);
+		bool        IsUsingSaveFile() const;
+
+		void        DeleteSaveFiles();
+		bool        Contains(const std::vector<GameObject::id_t>& _container, const GameObject::id_t& _value);
+		std::string GetFileName() const;
+
+
+		std::vector<GameObject*>& GetRootObjects();
+
+		GameObject* AddRootObject(GameObject* _gameObject);
+		GameObject* AddRootObjectImmediate(GameObject* _gameObject);
+		GameObject* AddChildObject(GameObject* _parent, GameObject* _child);
+		GameObject* AddChildObjectImmediate(GameObject* _parent, GameObject* _child);
+		GameObject* AddSiblingObjectImmediate(GameObject* _gameObject, GameObject* _newSibling);
+
+		void SetRootObjectIndex(GameObject* _rootObject, uint32_t _newIndex);
+
+
+		void RemoveAllObjects();          // Removes and destroys all objects in scene at end of frame
+		void RemoveAllObjectsImmediate(); // Removes and destroys all objects in scene
+		void RemoveAllEditorObjectsImmediate();
+		void RemoveObject(const GameObject::id_t& _gameObjectId, bool _bDestroy);
+		void RemoveObject(const GameObject* _gameObject, bool _bDestroy);
+		//void RemoveObjectImmediate(const GameObject::id_t& _gameObjectID, bool _bDestroy);
+		//void RemoveObjectImmediate(GameObject* _gameObject, bool _bDestroy);
+		void RemoveObjects(const std::vector<GameObject::id_t>& _gameObjects, bool _bDestroy);
+		void RemoveObjects(const std::vector<GameObject*>& _gameObjects, bool _bDestroy);
+		void RemoveObjectsImmediate(const std::vector<GameObject::id_t>& _gameObjects, bool _bDestroy);
+		void RemoveObjectsImmediate(const std::vector<GameObject*>& _gameObjects, bool _bDestroy);
+
+		GameObject::id_t FirstObjectWithTag(const std::string& _tag);
+
+		std::string name;
+		std::string fileName;
+
+		std::vector<GameObject::id_t> pendingDestroyObjects; // Objects to destroy at LateUpdate this frame
+		std::vector<GameObject*>      pendingAddObjects;     // Objects to add as root objects at LateUpdate
+		std::vector<GameObject*>      rootObjects;
+		std::vector<GameObject::id_t> pendingRemoveObjects;
+
+		const GameObject::id_t invalidGameObjectId = {};
+
+
+		bool bInitialized = false;
+		bool bLoaded      = false;
 };
-
