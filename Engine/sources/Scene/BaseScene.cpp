@@ -35,11 +35,26 @@ GameObject* BaseScene::AddRootObject(GameObject* gameObject)
 	return gameObject;
 }
 
+
 void BaseScene::RemoveAllObjects()
 {
 	for (GameObject* rootObject : m_RootObjects)
 	{
 		m_PendingDestroyObjects.push_back(rootObject->GetId());
+	}
+}
+
+void BaseScene::RemoveAllObjectsImmediate()
+{
+	auto iter = m_RootObjects.begin();
+	while (iter != m_RootObjects.end())
+	{
+		GameObject* gameObject = *iter;
+
+		// Recurses down child hierarchy
+		delete gameObject;
+
+		iter = m_RootObjects.erase(iter);
 	}
 }
 
