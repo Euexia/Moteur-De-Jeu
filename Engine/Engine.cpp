@@ -2,13 +2,30 @@
 #include "Managers/SoundSystemManager.h"
 #include "EngineTestCode.h"
 #include "CoreEngine.h"
+#include "TCP/Client/TCPClientStart.h"
+#include "TCP/Server/TCPServerStart.h"
 
 #include <iostream>
 #include <cstdlib>
 
-int main() {
+int main(int argc, char* argv[]) {
     EngineTestCode engineTestCode;
     engineTestCode.TestCode();
+
+    printf("You have entered %d arguments:\n", argc);
+
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i], "clientTCP") == 0)
+        {
+            TCPClientStart client;
+            client.TCPClient();
+        }
+        if (strcmp(argv[i], "serverTCP") == 0)
+        {
+            TCPServerStart server;
+            server.TCPServer();
+        }
+    }
 
     //SoundSystemManager sound;
     //SoundClass soundSample;
@@ -25,26 +42,26 @@ int main() {
      *
      * @return EXIT_SUCCESS si l'application s'est termin�e avec succ�s, EXIT_FAILURE sinon.
      */
-    //lve::FirstApp app{};
+     lve::FirstApp app{};
 
-    const Engine* engine = Engine::GetInstance();
+     const Engine* engine = Engine::GetInstance();
 
-    engine->Init();
+     engine->Init();
 
-    //SceneModule* scene_module = engine->GetModuleManager()->GetModule<SceneModule>();
-    //scene_module->SetScene<MenuScene>();
+     ////SceneModule* scene_module = engine->GetModuleManager()->GetModule<SceneModule>();
+     ////scene_module->SetScene<MenuScene>();
 
-    try {
-        engine->Run();
-        //app.Run();
-    }
-    catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
-        return EXIT_FAILURE;
-    }
+     try {
+         engine->Run();
+         //app.Run();
+     }
+     catch (const std::exception& e) {
+         std::cerr << e.what() << std::endl;
+         return EXIT_FAILURE;
+     }
 
-    //sound.releaseSound(soundSample);
+     ////sound.releaseSound(soundSample);
 
 
-    return EXIT_SUCCESS;
+     return EXIT_SUCCESS;
 }
