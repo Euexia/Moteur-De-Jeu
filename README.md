@@ -25,7 +25,6 @@ Ce projet est un moteur 3D développé en C++ avec l'utilisation de Vulkan pour 
 - Communication réseau avec Winsock.
 - Chargement de modèles 3D à partir de fichiers obj avec tinyObjLoader.
 - Manipulation de fichiers de configuration au format JSON avec JSON for Modern C++.
-- Utilisation des fonctionnalités de la bibliothèque standard du C++.
 - Calculs mathématiques pour les graphiques avec GLM.
 
 ## Comment utiliser
@@ -33,7 +32,7 @@ Ce projet est un moteur 3D développé en C++ avec l'utilisation de Vulkan pour 
 1. **Installation des dépendances**:
 
    - Assurez-vous d'avoir Vulkan SDK installé sur votre système.
-   - Téléchargez et compilez les librairies Bullet Physics, Dear ImGui, GLFW, FMOD, tinyObjLoader, JSON for Modern C++, std_lib et GLM, assurez-vous qu'elles sont accessibles dans votre projet.
+   - Téléchargez et compilez les librairies Bullet Physics, Dear ImGui, GLFW, FMOD, tinyObjLoader, JSON for Modern C++ et GLM, assurez-vous qu'elles sont accessibles dans votre projet.
 
 2. **Compilation du projet**:
 
