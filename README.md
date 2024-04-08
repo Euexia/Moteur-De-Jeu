@@ -31,7 +31,7 @@ Ce projet est un moteur 3D développé en C++ avec l'utilisation de Vulkan pour 
 
 1. **Installation des dépendances**:
 
-   - Assurez-vous d'avoir Vulkan SDK installé sur votre système.
+   - Assurez-vous d'avoir [Vulkan SDK](https://vulkan.lunarg.com/sdk/home) installé sur votre système.
 
 2. **Compilation du projet**:
 
