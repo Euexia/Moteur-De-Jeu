@@ -32,12 +32,11 @@ Ce projet est un moteur 3D développé en C++ avec l'utilisation de Vulkan pour 
 1. **Installation des dépendances**:
 
    - Assurez-vous d'avoir Vulkan SDK installé sur votre système.
-   - Téléchargez et compilez les librairies Bullet Physics, Dear ImGui, GLFW, FMOD, tinyObjLoader, JSON for Modern C++ et GLM, assurez-vous qu'elles sont accessibles dans votre projet.
 
 2. **Compilation du projet**:
 
    - Clonez ce dépôt sur votre machine.
-   - Utilisez un compilateur C++ compatible avec les fonctionnalités C++17 et configurez le projet pour inclure les librairies nécessaires.
+   - Utilisez un compilateur C++ compatible avec les fonctionnalités C++17.
 
 3. **Exécution du moteur**:
    - Lancez l'application compilée.
