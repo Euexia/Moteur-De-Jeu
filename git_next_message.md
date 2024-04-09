@@ -1,5 +1,3 @@
-FIX : Rework almost done
+NEW: Début Mesh
 
-- Fix des lumières avec des pointeurs de gameObject
-- Nettoyage de la plupart du code
-- Besoin d'intégrer de nouveaux component pour la génération du mesh et restructurer le code
+- Début de création du component Mesh
