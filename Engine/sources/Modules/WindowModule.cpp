@@ -184,7 +184,6 @@ void WindowModule::Update()
 
 	if (!ShouldClose())
 	{
-		glfwPollEvents();
 		secondsSinceTitleUpdate += TimeModule::GetDeltaTime();
 		if (secondsSinceTitleUpdate >= updateWindowTitleFrequency)
 		{

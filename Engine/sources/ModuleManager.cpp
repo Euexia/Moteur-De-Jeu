@@ -4,6 +4,7 @@
 #include "Modules/RHIVulkanModule.h"
 #include "Modules/TimeModule.h"
 #include "Modules/WindowModule.h"
+#include "Modules/InputModule.h"
 #include "Scene/SceneManager.h"
 
 ModuleManager::~ModuleManager()
@@ -15,6 +16,7 @@ ModuleManager::~ModuleManager()
 void ModuleManager::CreateDefaultModules()
 {
 	CreateModule<WindowModule>();
+	CreateModule<InputModule>();
 	CreateModule<SceneManager>();
 	CreateModule<RHIVulkanModule>();
 	CreateModule<TimeModule>();

@@ -1,16 +1,12 @@
 #include "Modules/InputModule.h"
+#include "Modules/WindowModule.h"
+#include "ModuleManager.h"
 #include <iostream>
-
-InputModule::InputModule(GLFWwindow* _window) : window(_window), mouseX(0.0), mouseY(0.0)
-{
-	glfwSetKeyCallback(_window, KeyCallback);
-	glfwSetMouseButtonCallback(_window, MouseButtonCallback);
-	glfwSetCursorPosCallback(_window, CursorPositionCallback);
-	glfwSetJoystickCallback(JoystickCallback);
-}
+#include <imgui.h>
 
 InputModule::~InputModule()
 {
+
 }
 
 void InputModule::ProcessInput()
@@ -122,6 +118,16 @@ void InputModule::GamepadInput(int _jid, const GLFWgamepadstate* _state)
 void InputModule::Init()
 {
 	Module::Init();
+
+	mouseX = 0.0;
+	mouseY = 0.0;
+
+	window = moduleManager->GetModule<WindowModule>()->GetGlfwWindow();
+
+	//glfwSetKeyCallback(window, KeyCallback);
+	//glfwSetMouseButtonCallback(window, MouseButtonCallback);
+	//glfwSetCursorPosCallback(window, CursorPositionCallback);
+	//glfwSetJoystickCallback(JoystickCallback);
 }
 
 void InputModule::Start()
@@ -137,6 +143,8 @@ void InputModule::FixedUpdate()
 void InputModule::Update()
 {
 	Module::Update();
+
+	ProcessInput();
 }
 
 void InputModule::PreRender()
@@ -167,4 +175,42 @@ void InputModule::Release()
 void InputModule::Finalize()
 {
 	Module::Finalize();
+}
+
+i32 InputModule::GetKeyDown(KeyCode keyCode, bool bIgnoreImGui /* = false */) const
+{
+	if (!bIgnoreImGui && ImGui::GetIO().WantCaptureKeyboard)
+	{
+		return 0;
+	}
+
+	auto iter = m_Keys.find(keyCode);
+	if (iter != m_Keys.end())
+	{
+		return m_Keys.at(keyCode).down;
+	}
+
+	return 0;
+}
+
+bool InputModule::GetKeyPressed(KeyCode keyCode, bool bIgnoreImGui /* = false */) const
+{
+	return GetKeyDown(keyCode, bIgnoreImGui) == 1;
+}
+
+bool InputModule::GetKeyReleased(KeyCode keyCode, bool bIgnoreImGui /* = false */) const
+{
+	if (!bIgnoreImGui && ImGui::GetIO().WantCaptureKeyboard)
+	{
+		return false;
+	}
+
+	auto iter = m_Keys.find(keyCode);
+	if (iter != m_Keys.end())
+	{
+		const Key& key = iter->second;
+		return key.down == 0 && key.pDown > 0;
+	}
+
+	return false;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <imgui.h>
 #include "Module.h"
 #include "Modules/WindowModule.h"
 #include "Scene/SceneManager.h"

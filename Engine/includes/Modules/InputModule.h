@@ -9,7 +9,7 @@
 class InputModule final : public Module
 {
 	public:
-		explicit InputModule(GLFWwindow* _window);
+		InputModule() = default;
 		~InputModule();
 
 		void ProcessInput();
@@ -17,6 +17,10 @@ class InputModule final : public Module
 		bool IsKeyPressed(int _key);
 		bool IsMouseButtonPressed(int _button);
 		void GetMousePosition(double& _xPos, double& _yPos) const;
+
+		i32 GetKeyDown(KeyCode keyCode, bool bIgnoreImGui = false) const;
+		bool GetKeyPressed(KeyCode keyCode, bool bIgnoreImGui = false) const;
+		bool GetKeyReleased(KeyCode keyCode, bool bIgnoreImGui = false) const;
 
 		/**
 			* @brief Initialise le module.
