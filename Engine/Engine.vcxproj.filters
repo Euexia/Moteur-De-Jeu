@@ -66,6 +66,7 @@
     <ClCompile Include="sources\TCP\Client\TCPClientStart.cpp" />
     <ClCompile Include="sources\TCP\Server\TCPServerStart.cpp" />
     <ClCompile Include="ImGUIInterface.cpp" />
+    <ClCompile Include="sources\GameObject\GameObjectSerializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxCollider.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="includes\TCP\Client\TCPClientStart.h" />
     <ClInclude Include="includes\TCP\Server\TCPServerStart.h" />
     <ClInclude Include="ImGUIInterface.h" />
+    <ClInclude Include="includes\GameObject\GameObjectSerializer.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\Librairies\FMOD\lib\fmod.dll" />

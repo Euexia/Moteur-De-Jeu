@@ -82,6 +82,7 @@ public:
 
 		Component* GetComponentRecursive(const std::string& componentName);
 
+
 		const std::vector<GameObject*>& GetChildren() const
 		{
 			return children;
@@ -126,7 +127,7 @@ public:
 			return component;
 		}
 
-		std::vector<Component*> GetComponents() { return components; }
+		std::vector<Component*> GetComponents() const { return components; }
 
 		template <typename T>
 		T* GetComponent()
