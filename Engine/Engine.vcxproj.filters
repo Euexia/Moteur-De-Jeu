@@ -67,6 +67,8 @@
     <ClCompile Include="InputKeyCode.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="ImGUIInterface.cpp" />
+    <ClCompile Include="sources\Modules\ScriptModule.cpp" />
+    <ClCompile Include="includes\IScript.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxCollider.h" />
@@ -130,6 +132,7 @@
     <ClInclude Include="InputKeyCode.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="ImGUIInterface.h" />
+    <ClInclude Include="includes\Modules\ScriptModule.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\Librairies\FMOD\lib\fmod.dll" />
