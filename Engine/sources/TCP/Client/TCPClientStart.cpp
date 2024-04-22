@@ -12,7 +12,7 @@ int TCPClientStart::TCPClient()
 	int port;
 	std::cout << "Port du serveur ? ";
 	std::cin >> port;
-	if (!client.connect("127.0.0.1", port))
+	if (!client.connect("10.3.40.36", port))
 	{
 		std::cout << "Impossible de se connecter au serveur [127.0.0.1:" << port << "] : " << Network::Errors::Get() << std::endl;
 	}
