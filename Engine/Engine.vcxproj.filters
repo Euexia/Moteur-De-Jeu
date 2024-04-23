@@ -81,6 +81,8 @@
     <ClCompile Include="sources\UDP\Serialization\Serialization.cpp" />
     <ClCompile Include="sources\UDP\Serialization\Deserializer.cpp" />
     <ClCompile Include="sources\UDP\Sockets.cpp" />
+    <ClCompile Include="sources\UDP\RangedInteger.cpp" />
+    <ClCompile Include="Float.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxCollider.h" />
@@ -163,7 +165,9 @@
     <ClInclude Include="includes\UDP\Serialization\Serialization.h" />
     <ClInclude Include="includes\UDP\Serialization\Deserializer.h" />
     <ClInclude Include="includes\UDP\Errors.h" />
-    <ClInclude Include="includes\UDP\Sockets.h" />
+    <ClInclude Include="includes\UDP\SocketsUDP.h" />
+    <ClInclude Include="includes\UDP\RangedInteger.h" />
+    <ClInclude Include="Float.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\Librairies\FMOD\lib\fmod.dll" />

@@ -1,6 +1,6 @@
 #include "UDP/ClientUDP.h"
 #include "UDP/DistantClient.h"
-#include "UDP/Sockets.h"
+#include "UDP/SocketsUDP.h"
 
 namespace Bousk
 {

@@ -39,7 +39,7 @@ namespace Bousk
 				std::vector<std::unique_ptr<Network::Messages::Base>> poll();
 
 				void onMessageReady(std::unique_ptr<Network::Messages::Base>&& msg);
-				Bousk::Network::UDP::DistantClient& getClient(const sockaddr_storage& clientAddr);
+				DistantClient& getClient(const sockaddr_storage& clientAddr);
 
 				#if BOUSKNET_ALLOW_NETWORK_INTERRUPTION == BOUSKNET_SETTINGS_ENABLED
 					inline void enableNetworkInterruption() { setNetworkInterruptionEnabled(true); }
