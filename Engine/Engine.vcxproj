@@ -311,9 +311,11 @@
     <ClCompile Include="..\Librairies\imgui\imgui_widgets.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="includes\GameObjectScript.h" />
     <ClCompile Include="includes\IScript.h" />
     <ClCompile Include="InputKeyCode.cpp" />
     <ClCompile Include="ImGUIInterface.cpp" />
+    <ClCompile Include="sources\GameObjectScript.cpp" />
     <ClCompile Include="sources\Modules\ScriptModule.cpp" />
     <ClCompile Include="sources\Script.cpp" />
     <ClCompile Include="sources\TCP\Client\Client.cpp" />

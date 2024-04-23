@@ -69,6 +69,9 @@
     <ClCompile Include="ImGUIInterface.cpp" />
     <ClCompile Include="sources\Modules\ScriptModule.cpp" />
     <ClCompile Include="includes\IScript.h" />
+    <ClCompile Include="sources\Script.cpp" />
+    <ClCompile Include="includes\GameObjectScript.h" />
+    <ClCompile Include="sources\GameObjectScript.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoxCollider.h" />
@@ -133,6 +136,7 @@
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="ImGUIInterface.h" />
     <ClInclude Include="includes\Modules\ScriptModule.h" />
+    <ClInclude Include="includes\Script.h" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\Librairies\FMOD\lib\fmod.dll" />
