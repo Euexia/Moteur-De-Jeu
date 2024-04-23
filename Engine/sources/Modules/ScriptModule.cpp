@@ -2,7 +2,7 @@
 #include "Modules/TimeModule.h"
 #include "CoreEngine.h"
 
-bool Core::Manager::ScriptManager::StartScripts()
+bool ScriptModule::StartScripts()
 {
     while (!scriptsToStart.empty())
     {
@@ -13,7 +13,7 @@ bool Core::Manager::ScriptManager::StartScripts()
     return true;
 }
 
-IScript* Core::Manager::ScriptManager::GetIScriptByName(const std::string& _name) const
+IScript* ScriptModule::GetIScriptByName(const std::string& _name) const
 {
     for (IScript* script : scripts)
     {
@@ -25,7 +25,7 @@ IScript* Core::Manager::ScriptManager::GetIScriptByName(const std::string& _name
 }
 
 
-void Core::Manager::ScriptManager::UpdateScripts()
+void ScriptModule::UpdateScripts()
 {
     StartScripts();
     
@@ -40,7 +40,7 @@ void Core::Manager::ScriptManager::UpdateScripts()
     }
 }
 
-void Core::Manager::ScriptManager::Stop()
+void ScriptModule::Stop()
 {
     std::queue<IScript*>().swap(scriptsToStart);
 

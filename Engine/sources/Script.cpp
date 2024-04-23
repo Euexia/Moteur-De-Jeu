@@ -1,34 +1,30 @@
 #include "Script.h"
 
-Scripts::Script::Script()
+Script::Script()
 {
 	timeModuleReference = Engine::GetInstance()->GetModuleManager()->GetModule<TimeModule>();
-	// windowModuleReference = Engine::GetInstance()->GetModule<Module::WindowModule>();
-	// renderInterfaceModuleReference = Engine::GetInstance()->GetModule<Module::RenderInterface>();
-	inputModuleReference = GetInstance()->GetModule<InputModule>();
+	windowModuleReference = Engine::GetInstance()->GetModuleManager()->GetModule<WindowModule>();
+	renderInterfaceModuleReference = Engine::GetInstance()->GetModuleManager()->GetModule<RHIModule>();
+	inputModuleReference = Engine::GetInstance()->GetModuleManager()->GetModule<InputModule>();
 }
 
-Module::Time::Clock* Scripts::Script::GetClock() const
+TimeModule* Script::GetTimeModule() const
 {
-	return clockModuleReference;
+	return timeModuleReference;
 }
 
-Module::Display::Window* Scripts::Script::GetWindow() const
+WindowModule* Script::GetWindowModule() const
 {
 	return windowModuleReference;
 }
 
-Module::Render::RenderInterface* Scripts::Script::GetRenderInterface() const
+RHIModule* Script::GetRenderInterfaceModule() const
 {
 	return renderInterfaceModuleReference;
 }
 
-Module::Tools::Logs::Logger* Scripts::Script::GetLogger() const
-{
-	return loggerModuleReference;
-}
 
-Module::Inputs::Input* Scripts::Script::GetInputs() const
+InputModule* Script::GetInputModule() const
 {
-	return inputsModuleReference;
+	return inputModuleReference;
 }

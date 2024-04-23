@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="ClientTCP|Win32">
@@ -315,6 +315,7 @@
     <ClCompile Include="InputKeyCode.cpp" />
     <ClCompile Include="ImGUIInterface.cpp" />
     <ClCompile Include="sources\Modules\ScriptModule.cpp" />
+    <ClCompile Include="sources\Script.cpp" />
     <ClCompile Include="sources\TCP\Client\Client.cpp" />
     <ClCompile Include="Convertisseur.cpp" />
     <ClCompile Include="lve_texture.cpp" />
@@ -355,6 +356,7 @@
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="includes\Modules\ScriptModule.h" />
+    <ClInclude Include="includes\Script.h" />
     <ClInclude Include="includes\TCP\Client\Client.h" />
     <ClInclude Include="Convertisseur.h" />
     <ClInclude Include="includes\Modules\DisplayModule.h" />

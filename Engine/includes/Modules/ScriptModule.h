@@ -5,38 +5,32 @@
 #include <string> 
 #include "IScript.h"
 
-namespace Core {
-    namespace Manager {
+class ScriptModule {
+public:
+    ScriptModule() = default;
+    ~ScriptModule() = default;
 
-        class ScriptManager {
-        public:
-            ScriptManager() = default;
-            ~ScriptManager() = default;
+    template <typename T, class U>
+    bool AddScript()
+    {
+        IScript* script = static_cast<IScript*>(new U);
 
-            template <typename T, class U>
-            bool AddScript()
-            {
-                Interface::IScript* script = static_cast<Interface::IScript*>(new U);
+        script->Initialize();
 
-                script->Initialize();
+        scriptsToStart.push(script);
+        scripts.push_back(script);
 
-                scriptsToStart.push(script);
-                scripts.push_back(script);
+        return true;
+    }
 
-                return true;
-            }
+    bool StartScripts();
 
-            bool StartScripts();
+    IScript* GetIScriptByName(const std::string& _name) const;
 
-            IScript* GetIScriptByName(const std::string& _name) const;
+    void UpdateScripts();
+    void Stop();
 
-            void UpdateScripts();
-            void Stop();
-
-        private:
-            std::vector<IScript*> scripts;
-            std::queue<IScript*> scriptsToStart;
-        };
-
-    } 
-} 
+private:
+    std::vector<IScript*> scripts;
+    std::queue<IScript*> scriptsToStart;
+};

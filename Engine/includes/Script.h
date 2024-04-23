@@ -1,13 +1,14 @@
 #pragma once
 
 #include "IScript.h"
+#include "CoreEngine.h"
 #include "Modules/TimeModule.h"
 #include "Modules/WindowModule.h"
-//#include "Modules/RenderInterface.h"
+#include "rhi.h"
 #include "Modules/InputModule.h"
 
-namespace Scripts
-{
+
+
     class Script : public IScript
     {
     public:
@@ -15,14 +16,13 @@ namespace Scripts
         ~Script() = default;
 
         TimeModule* GetTimeModule() const;
-        //Modules::WindowModule* GetWindowModule() const; 
-        //Render::RenderInterface* GetRenderInterfaceModule() const;
+        WindowModule* GetWindowModule() const;
+        RHIModule* GetRenderInterfaceModule() const;
         InputModule* GetInputModule() const;
 
     private:
         TimeModule* timeModuleReference = nullptr;
-        //Modules::WindowModule* windowModuleReference = nullptr; 
-        //Render::RenderInterface* renderInterfaceModuleReference = nullptr;
+        WindowModule* windowModuleReference = nullptr;
+        RHIModule* renderInterfaceModuleReference = nullptr;
         InputModule* inputModuleReference = nullptr;
     };
-}
