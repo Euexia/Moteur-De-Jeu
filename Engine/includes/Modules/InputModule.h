@@ -32,7 +32,9 @@ class InputModule final : public Module
 
 		glm::vec2 GetMousePosition() const;
 
-		void KeyCallback(Inputs::KeyCode keyCode, Inputs::KeyAction keyAction, int32_t mods);
+		void MouseButtonCallback(Inputs::MouseButton mouseButton, Inputs::KeyAction keyAction, int32_t mods);
+		void KeyCallback(Inputs::KeyCode _keyCode, Inputs::KeyAction _keyAction, int32_t _mods);
+		void CursorPosCallback(double _x, double _y);
 
 		/**
 			* @brief Initialise le module.
@@ -101,11 +103,11 @@ class InputModule final : public Module
 		float m_ScrollXOffset = 0;
 		float m_ScrollYOffset = 0;
 
-		static void KeyCallback(GLFWwindow* _window, int _key, int _scancode, int _action, int _mods);
-		static void MouseButtonCallback(GLFWwindow* _window, int _button, int _action, int _mods);
-		static void CursorPositionCallback(GLFWwindow* _window, double _xPos, double _yPos);
-		static void JoystickCallback(int _jid, int _event);
-		static void GamepadInput(int _jid, const GLFWgamepadstate* _state);
+		//static void KeyCallback(GLFWwindow* _window, int32_t _key, int32_t _scancode, int32_t _action, int32_t _mods);
+		//static void MouseButtonCallback(GLFWwindow* _window, int _button, int _action, int _mods);
+		//static void CursorPositionCallback(GLFWwindow* _window, double _xPos, double _yPos);
+		//static void JoystickCallback(int _jid, int _event);
+		//static void GamepadInput(int _jid, const GLFWgamepadstate* _state);
 };
 
 #endif // INPUT_MANAGER_H

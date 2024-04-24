@@ -123,7 +123,6 @@ void InputModule::Init()
 
 	windowModule = moduleManager->GetModule<WindowModule>();
 
-	//glfwSetKeyCallback(windowModule->GetGlfwWindow(), KeyCallback);
 	//glfwSetMouseButtonCallback(window, MouseButtonCallback);
 	//glfwSetCursorPosCallback(window, CursorPositionCallback);
 	//glfwSetJoystickCallback(JoystickCallback);
@@ -288,38 +287,75 @@ glm::vec2 InputModule::GetMousePosition() const
 	return m_MousePosition;
 }
 
-void InputModule::KeyCallback(Inputs::KeyCode keyCode, Inputs::KeyAction keyAction, int32_t mods)
+void InputModule::MouseButtonCallback(Inputs::MouseButton mouseButton, Inputs::KeyAction keyAction, int32_t mods)
 {
-	//FLEX_UNUSED(mods);
-
-	keys[keyCode].pDown = keys[keyCode].down;
-
 	if (keyAction == Inputs::KeyAction::KEY_PRESS)
 	{
-		keys[keyCode].down = 1;
-	}
-	else if (keyAction == Inputs::KeyAction::KEY_REPEAT)
-	{
-		// Ignore repeat events (we're already counting how long the key is down for
+		if (m_MousePosition.x == -1.0f)
+		{
+			m_MousePosition = windowModule->GetMousePosition();
+		}
+
+		m_MouseButtonStates |= (1 << (uint32_t)mouseButton);
+		m_MouseButtonsPressed |= (1 << (uint32_t)mouseButton);
+		m_MouseButtonsReleased &= ~(1 << (uint32_t)mouseButton);
+
+		m_MouseButtonDrags[(uint32_t)mouseButton].startLocation = m_MousePosition;
+		m_MouseButtonDrags[(uint32_t)mouseButton].endLocation = m_MousePosition;
 	}
 	else if (keyAction == Inputs::KeyAction::KEY_RELEASE)
 	{
-		keys[keyCode].down = 0;
+		m_MouseButtonStates &= ~(1 << (uint32_t)mouseButton);
+		m_MouseButtonsPressed &= ~(1 << (uint32_t)mouseButton);
+		m_MouseButtonsReleased |= (1 << (uint32_t)mouseButton);
+
+
+		if (m_MousePosition.x == -1.0f)
+		{
+			m_MousePosition = windowModule->GetMousePosition();
+		}
+
+		m_MouseButtonDrags[(uint32_t)mouseButton].endLocation = m_MousePosition;
+	}
+}
+
+void InputModule::KeyCallback(Inputs::KeyCode _keyCode, Inputs::KeyAction _keyAction, int32_t _mods)
+{
+	//FLEX_UNUSED(mods);
+
+	keys[_keyCode].pDown = keys[_keyCode].down;
+
+	if (_keyAction == Inputs::KeyAction::KEY_PRESS)
+	{
+		keys[_keyCode].down = 1;
+		std::cout << "Pressed key: ";
+	}
+	else if (_keyAction == Inputs::KeyAction::KEY_REPEAT)
+	{
+		// Ignore repeat events (we're already counting how long the key is down for
+		std::cout << "Holding key: ";
+	}
+	else if (_keyAction == Inputs::KeyAction::KEY_RELEASE)
+	{
+		keys[_keyCode].down = 0;
+		std::cout << "Released key: ";
 	}
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.KeysDown[(int32_t)keyCode] = keys[keyCode].down > 0;
+	std::cout << Inputs::KeyCodeStrings[static_cast<int>(_keyCode)] << std::endl;
 
-	const bool bCtrlDown = GetKeyDown(Inputs::KeyCode::KEY_LEFT_CONTROL, true) || GetKeyDown(Inputs::KeyCode::KEY_RIGHT_CONTROL, true);
-	const bool bShiftDown = GetKeyDown(Inputs::KeyCode::KEY_LEFT_SHIFT, true) || GetKeyDown(Inputs::KeyCode::KEY_RIGHT_SHIFT, true);
-	const bool bAltDown = GetKeyDown(Inputs::KeyCode::KEY_LEFT_ALT, true) || GetKeyDown(Inputs::KeyCode::KEY_RIGHT_ALT, true);
-	const bool bSuperDown = GetKeyDown(Inputs::KeyCode::KEY_LEFT_SUPER, true) || GetKeyDown(Inputs::KeyCode::KEY_RIGHT_SUPER, true);
-	const bool bModiferDown = (bCtrlDown || bShiftDown || bAltDown || bSuperDown);
+	//ImGuiIO& io = ImGui::GetIO();
+	//io.KeysDown[(int32_t)_keyCode] = keys[_keyCode].down > 0;
 
-	io.KeyCtrl = bCtrlDown;
-	io.KeyShift = bShiftDown;
-	io.KeyAlt = bAltDown;
-	io.KeySuper = bSuperDown;
+	//const bool bCtrlDown = GetKeyDown(Inputs::KeyCode::KEY_LEFT_CONTROL, true) || GetKeyDown(Inputs::KeyCode::KEY_RIGHT_CONTROL, true);
+	//const bool bShiftDown = GetKeyDown(Inputs::KeyCode::KEY_LEFT_SHIFT, true) || GetKeyDown(Inputs::KeyCode::KEY_RIGHT_SHIFT, true);
+	//const bool bAltDown = GetKeyDown(Inputs::KeyCode::KEY_LEFT_ALT, true) || GetKeyDown(Inputs::KeyCode::KEY_RIGHT_ALT, true);
+	//const bool bSuperDown = GetKeyDown(Inputs::KeyCode::KEY_LEFT_SUPER, true) || GetKeyDown(Inputs::KeyCode::KEY_RIGHT_SUPER, true);
+	//const bool bModiferDown = (bCtrlDown || bShiftDown || bAltDown || bSuperDown);
+
+	//io.KeyCtrl = bCtrlDown;
+	//io.KeyShift = bShiftDown;
+	//io.KeyAlt = bAltDown;
+	//io.KeySuper = bSuperDown;
 
 	//if (!io.WantCaptureKeyboard)
 	//{
@@ -382,4 +418,16 @@ void InputModule::KeyCallback(Inputs::KeyCode keyCode, Inputs::KeyAction keyActi
 	//		bEventsInQueue = (actionIter != m_ActionCallbacks.end()) || (keyEventIter != m_KeyEventCallbacks.end());
 	//	}
 	//}
+}
+
+void InputModule::CursorPosCallback(double _x, double _y)
+{
+	m_MousePosition = glm::vec2((double)_x, (double)_y);
+
+#if 0
+	{
+		glm::vec2 pos = g_Window->GetMousePosition();
+		Print("%.2f, %.2f (%.2f, %.2f)\n", x, y, pos.x, pos.y);
+	}
+#endif
 }
