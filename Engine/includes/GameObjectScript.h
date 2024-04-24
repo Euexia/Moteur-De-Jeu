@@ -1,19 +1,28 @@
 #pragma once
+
 #include "Script.h"
 #include "GameObject/GameObject.h"
 #include <string>
 
-	class GameObjectScript : public Script
-	{
-	public:
+/**
+ * @brief Classe GameObjectScript.
+ *
+ * Cette classe représente un script attaché à un GameObject.
+ * Elle hérite de la classe de base Script.
+ */
+class GameObjectScript : public Script
+{
+public:
+    /**
+     * @brief Constructeur par défaut.
+     */
+    GameObjectScript();
 
-		GameObjectScript();
+    /**
+     * @brief Destructeur par défaut.
+     */
+    ~GameObjectScript() = default;
 
-		~GameObjectScript() = default;
-
-	protected:
-
-		GameObject object;
-	};
-
-
+protected:
+    GameObject object; 
+};
