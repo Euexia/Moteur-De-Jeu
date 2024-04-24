@@ -7,105 +7,99 @@
 #include "Modules/WindowModule.h"
 #include "Scene/BaseScene.h"
 
-
+/**
+ * @brief Classe SceneManager.
+ *
+ * Cette classe gère les scènes du jeu, y compris leur chargement, leur création et leur destruction.
+ * Elle hérite de la classe de base Module.
+ */
 class SceneManager final : public Module
 {
-	public:
-		SceneManager() = default;
+public:
+    /**
+     * @brief Constructeur par défaut.
+     */
+    SceneManager() = default;
 
-		SceneManager(const SceneManager&&)            = delete;
-		SceneManager(const SceneManager&)             = delete;
-		SceneManager& operator=(const SceneManager&&) = delete;
-		SceneManager& operator=(const SceneManager&)  = delete;
+    // Désactivation des opérations de copie et de déplacement
+    SceneManager(const SceneManager&&) = delete;
+    SceneManager(const SceneManager&) = delete;
+    SceneManager& operator=(const SceneManager&&) = delete;
+    SceneManager& operator=(const SceneManager&) = delete;
 
-		void RunScene(const std::string& _sceneName);
+    /**
+     * @brief Lance une scène spécifique.
+     * @param _sceneName Le nom de la scène à lancer.
+     */
+    void RunScene(const std::string& _sceneName);
 
-		void       SetMainScene(const std::string& _sceneName);
-		BaseScene* GetMainScene() const { return mainScene; }
-		BaseScene* GetScene(const std::string& _sceneName);
-		void       RenameScene(const std::string& _oldName, const std::string& _newName);
+    /**
+     * @brief Définit la scène principale.
+     * @param _sceneName Le nom de la scène principale.
+     */
+    void SetMainScene(const std::string& _sceneName);
 
+    /**
+     * @brief Obtient la scène principale.
+     * @return Un pointeur vers la scène principale.
+     */
+    BaseScene* GetMainScene() const { return mainScene; }
 
-		void CreateScene(std::string _name, bool _isActive);
-		void DestroyScene(const std::string& _sceneName);
+    /**
+     * @brief Obtient une scène par son nom.
+     * @param _sceneName Le nom de la scène à obtenir.
+     * @return Un pointeur vers la scène correspondante, ou nullptr si elle n'existe pas.
+     */
+    BaseScene* GetScene(const std::string& _sceneName);
 
-		bool LoadSceneFromFile(const std::string& _fileName);
+    /**
+     * @brief Renomme une scène.
+     * @param _oldName L'ancien nom de la scène.
+     * @param _newName Le nouveau nom de la scène.
+     */
+    void RenameScene(const std::string& _oldName, const std::string& _newName);
 
-		std::string GetActiveScene() const;
+    // Méthodes pour la gestion des scènes
+    void CreateScene(std::string _name, bool _isActive);
+    void DestroyScene(const std::string& _sceneName);
+    bool LoadSceneFromFile(const std::string& _fileName);
 
-		std::string GetListScenes() const;
+    // Méthodes d'information sur les scènes
+    std::string GetActiveScene() const;
+    std::string GetListScenes() const;
+    int SceneCount() const;
+    std::pair<std::string, bool> GetSceneAt(int _index);
 
-		int SceneCount() const;
+    // Méthodes pour la gestion de la scène actuelle
+    BaseScene* GetCurrentScene() const;
+    std::vector<std::unique_ptr<BaseScene>>& GetScenes() { return scenes; }
+    void SetCurrentScene(int _sceneIndex);
+    void SetNextSceneActive();
+    void SetPreviousSceneActive();
 
-		std::pair<std::string, bool> GetSceneAt(int _index);
+    // Méthodes héritées de la classe Module
+    void Init() override;
+    void Start() override;
+    void FixedUpdate() override;
+    void Update() override;
+    void PreRender() override;
+    void Render() override;
+    void RenderGui() override;
+    void PostRender() override;
+    void Release() override;
+    void Finalize() override;
 
-		BaseScene* GetCurrentScene() const;
-		std::vector<std::unique_ptr<BaseScene>>& GetScenes() { return scenes; }
+private:
+    // Méthodes privées
+    bool SceneFileExists(const std::string& _filePath) const;
+    GameObject* CreateGameObjectFromSceneData();
 
-		void SetCurrentScene(int _sceneIndex);
-		void SetNextSceneActive();
-		void SetPreviousSceneActive();
-
-
-		/**
-			* @brief Initialise le module.
-			*/
-		void Init() override;
-
-		/**
-		 * @brief Démarre le module.
-		 */
-		void Start() override;
-
-		/**
-		 * @brief Effectue une mise à jour fixe du module.
-		 */
-		void FixedUpdate() override;
-
-		/**
-		 * @brief Met à jour le module.
-		 */
-		void Update() override;
-
-		/**
-		 * @brief Fonction pré-rendu du module.
-		 */
-		void PreRender() override;
-
-		/**
-		 * @brief Rendu du module.
-		 */
-		void Render() override;
-
-		/**
-		 * @brief Rendu de l'interface graphique du module.
-		 */
-		void RenderGui() override;
-
-		/**
-		 * @brief Fonction post-rendu du module.
-		 */
-		void PostRender() override;
-
-		/**
-		 * @brief Libère les ressources utilisées par le module.
-		 */
-		void Release() override;
-
-		/**
-		 * @brief Finalise le module.
-		 */
-		void Finalize() override;
-
-	private:
-		bool        SceneFileExists(const std::string& _filePath) const;
-		GameObject* CreateGameObjectFromSceneData();
-
-		WindowModule*                           windowModule = nullptr;
-		std::map<std::string, bool>             listScenes;
-		int                                     sceneCount;
-		bool                                    sceneActive;
-		BaseScene*				                mainScene = nullptr;
-		std::vector<std::unique_ptr<BaseScene>> scenes;
-		int                                     currentSceneIndex = -1;
+    // Membres
+    WindowModule* windowModule = nullptr; /**< Module de fenêtre associé. */
+    std::map<std::string, bool>             listScenes; /**< Liste des scènes avec leur état d'activation. */
+    int                                     sceneCount; /**< Nombre total de scènes. */
+    bool                                    sceneActive; /**< Indique si une scène est active. */
+    BaseScene* mainScene = nullptr; /**< Scène principale. */
+    std::vector<std::unique_ptr<BaseScene>> scenes; /**< Liste des scènes. */
+    int                                     currentSceneIndex = -1; /**< Index de la scène actuelle. */
 };

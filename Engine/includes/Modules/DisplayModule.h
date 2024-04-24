@@ -1,6 +1,13 @@
 #pragma once
 #include "Modules/Module.h"
 
+
+/**
+ * @brief Classe DisplayModule.
+ *
+ * Cette classe représente un module de débogage dans le moteur de jeu.
+ * Elle hérite de la classe de base Module.
+ */
 class DisplayModule final : public Module
 {
 

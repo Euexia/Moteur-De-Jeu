@@ -5,9 +5,24 @@
 
 namespace lve
 {
+	/**
+	* @brief Classe LveBuffer.
+	*
+	* Cette classe représente un tampon Vulkan.
+	*/
 	class LveBuffer
 	{
 		public:
+			/**
+			* @brief Constructeur de LveBuffer.
+			*
+			* @param _device L'objet LveDevice associé à ce tampon.
+			* @param _instanceSize La taille d'une instance dans le tampon.
+			* @param _instanceCount Le nombre d'instances dans le tampon.
+			* @param _usageFlags Les indicateurs d'utilisation du tampon.
+			* @param _memoryPropertyFlags Les indicateurs de propriétés de mémoire du tampon.
+			* @param _minOffsetAlignment La taille d'alignement minimale.
+			*/
 			LveBuffer(
 				LveDevice&              _device,
 				vk::DeviceSize          _instanceSize,

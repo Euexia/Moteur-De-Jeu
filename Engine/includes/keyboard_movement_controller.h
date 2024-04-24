@@ -6,9 +6,19 @@
 
 namespace lve
 {
+	/**
+ * @brief Classe KeyboardMovementController.
+ *
+ * Cette classe gère le contrôleur de mouvement au clavier pour un objet dans le plan XZ.
+ */
 	class KeyboardMovementController
 	{
 		public:
+			/**
+		 * @brief Structure KeyMappings.
+		 *
+		 * Cette structure contient les mappings des touches du clavier pour contrôler le mouvement et la rotation de l'objet.
+		 */
 			struct KeyMappings
 			{
 				int moveLeft     = GLFW_KEY_A;

@@ -11,6 +11,12 @@
 
 namespace lve
 {
+	
+		/**
+		 * @brief Classe LveDescriptorSetLayout.
+		 *
+		 * Cette classe représente la mise en page d'un ensemble de descripteurs Vulkan.
+		 */
 	class LveDescriptorSetLayout
 	{
 		public:

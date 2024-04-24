@@ -9,6 +9,9 @@
 #include "Module.h"
 
 // TODO : Vérifier si c pertinent
+/**
+ * @brief Structure représentant un composant de l'interface utilisateur (HUD).
+ */
 struct HUDComponent
 {
 	float       x,     y;      // Position de l'élément HUD
@@ -18,6 +21,12 @@ struct HUDComponent
 	VkSampler   sampler;       // Échantillonneur Vulkan
 };
 
+
+/**
+ * @brief Classe HUDModule.
+ *
+ * Cette classe gère les composants de l'interface utilisateur (HUD) dans le moteur de jeu.
+ */
 class HUDModule : public Module
 {
 	public:

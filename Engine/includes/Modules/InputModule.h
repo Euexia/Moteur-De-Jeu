@@ -6,11 +6,20 @@
 
 #include "Module.h"
 
+
+
+/**
+ * @brief Classe InputModule.
+ *
+ * Cette classe gère les entrées utilisateur telles que les touches du clavier, les boutons de la souris et la position de la souris.
+ * Elle hérite de la classe de base Module.
+ */
 class InputModule final : public Module
 {
 	public:
 		explicit InputModule(GLFWwindow* _window);
 		~InputModule();
+
 
 		void ProcessInput();
 

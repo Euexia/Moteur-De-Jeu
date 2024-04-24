@@ -2,21 +2,43 @@
 
 #include "ModuleManager.h"
 
+/**
+ * @brief Classe Engine.
+ *
+ * Cette classe représente le moteur principal de jeu.
+ */
 class Engine
 {
-	public:
-		static Engine* GetInstance();
+public:
+    /**
+     * @brief Obtient l'instance unique de la classe Engine.
+     * @return Un pointeur vers l'instance unique de Engine.
+     */
+    static Engine* GetInstance();
 
-		void Init() const;
-		void Run() const;
-		void Quit() { shouldQuit = true; }
+    /**
+     * @brief Initialise le moteur.
+     */
+    void Init() const;
 
-		[[nodiscard]] ModuleManager* GetModuleManager() const { return moduleManager; }
+    /**
+     * @brief Lance l'exécution du moteur.
+     */
+    void Run() const;
 
-	private:
-		static Engine* instance;
+    /**
+     * @brief Arrête l'exécution du moteur.
+     */
+    void Quit() { shouldQuit = true; }
 
-		ModuleManager* moduleManager = new ModuleManager;
+    /**
+     * @brief Obtient le gestionnaire de modules du moteur.
+     * @return Un pointeur vers le gestionnaire de modules.
+     */
+    [[nodiscard]] ModuleManager* GetModuleManager() const { return moduleManager; }
 
-		bool shouldQuit = false;
+private:
+    static Engine* instance; /**< Instance unique de la classe Engine. */
+    ModuleManager* moduleManager = new ModuleManager; /**< Gestionnaire de modules. */
+    bool shouldQuit = false; /**< Indique si le moteur doit être arrêté. */
 };
