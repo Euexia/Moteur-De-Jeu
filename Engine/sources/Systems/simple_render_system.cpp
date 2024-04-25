@@ -1,9 +1,12 @@
 #include "Systems/simple_render_system.h"
 
+#include "lve_descriptors.h"
+
 //libs
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm.hpp>
+#include <iostream>
 
 // std
 #include <cassert>
@@ -58,36 +61,58 @@ namespace lve
 			pipelineConfig);
 	}
 
-	void SimpleRenderSystem::RenderGameObjects(const std::vector<GameObject*>& _gameObjects, const LveCamera& _camera, const vk::CommandBuffer _commandBuffer, const vk::DescriptorSet _globalDescriptorSet) const
+	void SimpleRenderSystem::RenderGameObjects(const std::vector<GameObject*>& _gameObjects, const LveCamera& _camera, const vk::CommandBuffer _commandBuffer, std::vector<std::vector<vk::DescriptorSet>*>* _DescriptorSetsAll, int _frameIndex)  const
 	{
 		// Liaison du pipeline
 		lvePipeline->Bind(_commandBuffer);
 
 		// Liaison de l'ensemble de descripteurs global
-		_commandBuffer.bindDescriptorSets(
-			vk::PipelineBindPoint::eGraphics,
-			pipelineLayout,
-			0,
-			_globalDescriptorSet,
-			nullptr);
+		//_commandBuffer.bindDescriptorSets(
+		//	vk::PipelineBindPoint::eGraphics,
+		//	pipelineLayout,
+		//	0,
+		//	_globalDescriptorSet,
+		//	nullptr);
 
 		for (const auto& game_object : _gameObjects)
 		{
-			if (game_object->model == nullptr) continue;
+			if (game_object->GetModel() == nullptr) continue;
+
+			if (game_object->GetTexture() > _DescriptorSetsAll->size() - 1)
+			{
+				_commandBuffer.bindDescriptorSets(
+					vk::PipelineBindPoint::eGraphics,
+					pipelineLayout,
+					0,
+					(*_DescriptorSetsAll)[0]->at(_frameIndex),
+					nullptr);
+			}
+			else
+			{
+				_commandBuffer.bindDescriptorSets(
+					vk::PipelineBindPoint::eGraphics,
+					pipelineLayout,
+					0,
+					(*_DescriptorSetsAll)[game_object->GetTexture()]->at(_frameIndex),
+					nullptr);
+			}
+
+
+
 			SimplePushConstantData push{};
 			push.modelMatrix  = game_object->GetTransform()->Mat4();
 			push.normalMatrix = game_object->GetTransform()->NormalMatrix();
 
-			// Mise à jour des push constants
+			// Mise ï¿½ jour des push constants
 			_commandBuffer.pushConstants<SimplePushConstantData>(
 				pipelineLayout,
 				vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
 				0,
 				push);
 
-			// Liaison du modèle et dessin
-			game_object->model->Bind(_commandBuffer);
-			game_object->model->Draw(_commandBuffer);
+			// Liaison du modï¿½le et dessin
+			game_object->GetModel()->Bind(_commandBuffer);
+			game_object->GetModel()->Draw(_commandBuffer);
 		}
 	}
 } // namespace lve

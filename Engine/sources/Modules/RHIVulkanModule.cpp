@@ -8,6 +8,9 @@
 #include "Modules/TimeModule.h"
 #include "Scene/SceneManager.h"
 
+#include <iostream>
+#include <fstream>
+
 RHIVulkanModule::RHIVulkanModule()
 {
 }
@@ -23,11 +26,65 @@ void RHIVulkanModule:: Init()
 	p_lveRenderer = new lve::LveRenderer{ windowModule, *p_lveDevice };
 }
 
+void RHIVulkanModule::AddTextureToPool(const std::string& _filepath) {
+
+	
+	std::ifstream file(_filepath);
+	if (!file.good()) { std::cout << "Failed to add texture, file path does not exist: " << _filepath << std::endl; }// return; }
+
+	const auto global_set_layout = lve::LveDescriptorSetLayout::Builder(*p_lveDevice)
+		.AddBinding(0, vk::DescriptorType::eUniformBuffer,
+			vk::ShaderStageFlagBits::eAllGraphics)
+		.AddBinding(1, vk::DescriptorType::eCombinedImageSampler,
+			vk::ShaderStageFlagBits::eFragment)
+		.Build();
+
+	lve::LveTexture* NewTexture;
+	if (!file.good()) { NewTexture = new lve::LveTexture(*p_lveDevice, "../Textures/bugtexture.png"); }// return; }
+	else { NewTexture = new lve::LveTexture(*p_lveDevice, _filepath); }
+
+	ListTextures.push_back(vk::DescriptorImageInfo());
+	ListTextures.back().sampler = NewTexture->getSampler();
+	ListTextures.back().imageView = NewTexture->getImageView();
+	ListTextures.back().imageLayout = NewTexture->getImageLayout();
+
+	ListDescriptors.push_back(new std::vector<vk::DescriptorSet>());
+	ListDescriptors.back()->resize(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+
+	builder = new lve::LveDescriptorPool::Builder{ *p_lveDevice };
+	builder->SetMaxSets(ListDescriptors.size() * lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+
+	globalPool = builder->Build();
+	int i = 0;
+	for (std::vector<vk::DescriptorSet>* descriptorSet : ListDescriptors)
+	{
+		for (size_t j = 0; j < descriptorSet->size(); j++)
+		{
+			int tex = i;
+			if (i > ListTextures.size() - 1) {
+				tex = 0;
+			}
+
+			auto buffer_info = uboBuffers[j]->DescriptorInfo();
+			lve::LveDescriptorWriter(*global_set_layout, *globalPool)
+				.WriteBuffer(0, &buffer_info)
+				.WriteImage(1, &ListTextures[tex])
+				.Build((*descriptorSet)[j]);
+		}
+		i++;
+	}
+
+}
+
+
 void RHIVulkanModule::Start()
 {
 	builder = new lve::LveDescriptorPool::Builder{ *p_lveDevice };
 	builder->SetMaxSets(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
-		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
+		.AddPoolSize(vk::DescriptorType::eUniformBuffer, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT)
+		.AddPoolSize(vk::DescriptorType::eCombinedImageSampler, lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
 	globalPool = builder->Build();
 
@@ -49,7 +106,17 @@ void RHIVulkanModule::Start()
 	const auto global_set_layout = lve::LveDescriptorSetLayout::Builder(*p_lveDevice)
 		.AddBinding(0, vk::DescriptorType::eUniformBuffer,
 			vk::ShaderStageFlagBits::eAllGraphics)
+		.AddBinding(1, vk::DescriptorType::eCombinedImageSampler,
+			vk::ShaderStageFlagBits::eFragment)
 		.Build();
+
+	// Je laisse la construction du globalDesc comme ça pour montrer 
+	texture1 = new lve::LveTexture(*p_lveDevice, "../Textures/coconut.jpg");
+
+	vk::DescriptorImageInfo imageInfo{};
+	imageInfo.sampler = texture1->getSampler();
+	imageInfo.imageView = texture1->getImageView();
+	imageInfo.imageLayout = texture1->getImageLayout();
 
 	globalDescriptorSets.resize(lve::LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
@@ -58,8 +125,18 @@ void RHIVulkanModule::Start()
 		auto buffer_info = uboBuffers[i]->DescriptorInfo();
 		lve::LveDescriptorWriter(*global_set_layout, *globalPool)
 			.WriteBuffer(0, &buffer_info)
+			.WriteImage(1, &imageInfo)
 			.Build(globalDescriptorSets[i]);
 	}
+
+	ListTextures.push_back(imageInfo);
+
+	ListDescriptors.push_back(&globalDescriptorSets);
+
+	AddTextureToPool("../Textures/unnamed.png");
+	AddTextureToPool("../Textures/viking_room.png");
+	AddTextureToPool("../Textures/grass.jpg");
+	AddTextureToPool("../Textures/gras.truc"); // TEST	
 
 	simpleRenderSystem = new lve::SimpleRenderSystem{
 		*p_lveDevice, p_lveRenderer->GetSwapChainRenderPass(), global_set_layout->GetDescriptorSetLayout()
@@ -111,7 +188,7 @@ void RHIVulkanModule::PreRender()
 
 void RHIVulkanModule::Render()
 {
-	simpleRenderSystem->RenderGameObjects(gameObjects, *camera, *currentCommandBuffer, globalDescriptorSets[frameIndex]);      //render shadow casting objects
+	simpleRenderSystem->RenderGameObjects(gameObjects, *camera, *currentCommandBuffer, &ListDescriptors, frameIndex);       //render shadow casting objects
 	pointLightSystem->Render(gameObjects, *camera, *currentCommandBuffer, globalDescriptorSets[frameIndex]);                 //render shadow casting objects
 }
 

@@ -1,6 +1,8 @@
 #include "Scene/SceneManager.h"
 #include <fstream>
 #include <sstream>
+
+#include "CoreEngine.h"
 #include "ModuleManager.h"
 #include "Modules/WindowModule.h"
 
@@ -88,7 +90,10 @@ void SceneManager::DestroyScene(const std::string& _sceneName)
  */
 void SceneManager::SetCurrentScene(const int _sceneIndex)
 {
-	if (_sceneIndex >= 0 && _sceneIndex < static_cast<int>(scenes.size())) currentSceneIndex = _sceneIndex;
+	if (_sceneIndex >= 0 && _sceneIndex < static_cast<int>(scenes.size())) {
+		currentSceneIndex = _sceneIndex;
+		mainScene = scenes[currentSceneIndex].get();
+	}
 }
 
 /**
@@ -190,7 +195,11 @@ bool SceneManager::LoadSceneFromFile(const std::string& _fileName)
 	return true;
 }
 
-
+/**
+ * @brief Sauvegarde une scène dans un fichier.
+ * @param _fileName Nom du fichier de scène à sauvegarder.
+ * @return true si la scène a été sauvegardée avec succès, sinon false.
+ */
 void SceneManager::RunScene(const std::string& _sceneName)
 {
 	if(listScenes.contains(_sceneName))
@@ -201,8 +210,8 @@ void SceneManager::RunScene(const std::string& _sceneName)
 			GetCurrentScene()->Finalize();
 		}
 		SetMainScene(_sceneName);
-		mainScene->Init();
-		mainScene->Start();
+		GetCurrentScene()->Init();
+		GetCurrentScene()->Start();
 	}
 }
 
@@ -252,8 +261,6 @@ void SceneManager::RenameScene(const std::string& _oldName, const std::string& _
 	}
 }
 
-
-
 void SceneManager::Init()
 {
 	Module::Init();
@@ -282,7 +289,11 @@ void SceneManager::FixedUpdate()
 void SceneManager::Update()
 {
 	Module::Update();
-	if (mainScene) mainScene->Update();
+	if(mainScene)
+	{
+		if(Engine::GetInstance()->GetEngineMode() == EngineMode::Editor) mainScene->UpdateEditor();
+		else if(Engine::GetInstance()->GetEngineMode() == EngineMode::Play) mainScene->Update();
+	}
 }
 
 void SceneManager::PreRender()

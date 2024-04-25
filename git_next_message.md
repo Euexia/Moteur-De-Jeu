@@ -1,3 +1,3 @@
-ENH : WindowModule Update
+NEW : EngineMode
 
-- Ajout de la sauvegarde et Lecture de fichier
+- Ajout de mode pour l'update des scènes dans l'Engine
