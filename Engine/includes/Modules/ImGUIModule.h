@@ -1,9 +1,10 @@
 #pragma once
 
 #include <functional>
-#include "Module.h"
+#include "Modules/Module.h"
 #include "Modules/WindowModule.h"
 #include "Scene/SceneManager.h"
+#include "RHIVulkanModule.h"
 
 class RHIModule;
 
@@ -116,6 +117,8 @@ public:
 	 */
 	void DisplayTransform(Transform* _transform);
 
+	void DrawModesWindow();
+
 	/**
 	 * @brief Dessine les paramètres de l'interface utilisateur du moteur de jeu.
 	 */
@@ -154,8 +157,9 @@ public:
 	/**
 	 * @brief Crée un nouveau GameObject du type spécifié et l'ajoute à la scène active.
 	 * @param _type Type de GameObject à créer, comme Cube, Light ou Plane.
+	 * @param _otherType
 	 */
-	void CreateSpecificGameObject(GameObjectType _type);
+	void CreateSpecificGameObject(GameObjectType _type, int _otherType = 0);
 
 protected:
 	vk::Device device; ///< Périphérique utilisé pour le rendu avec Vulkan.
@@ -180,6 +184,8 @@ protected:
 	glm::vec3 scaleEdit; ///< Stocke l'échelle actuelle pour l'édition.
 
 	std::vector<bool> isOpen; ///< Vecteur pour suivre l'état ouvert/fermé des différents panneaux de l'interface utilisateur.
+
+	bool textureView = false;
 
 	char ipBuffer[64] = "";  // Buffer pour l'adresse IP
 	char portBuffer[6] = ""; // Buffer pour le port, suffisant pour contenir des nombres jusqu'à 65535
