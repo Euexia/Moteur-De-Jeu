@@ -567,14 +567,14 @@ void ImGuiModule::DrawTchatWindow() {
 		ImGui::InputText("Port", portBuffer, sizeof(portBuffer));
 		if (ImGui::Button("Connexion")) {
 			unsigned long port = std::stoul(portBuffer, nullptr, 0);
-			if (std::string(ipBuffer) == "" && std::string(portBuffer) != "")
-			{
-				std::cout << "server" << std::endl;
-				serverTCP.TCPServer(port, ipBuffer);
-			}
-			else {
-				clientTCP.TCPClient(ipBuffer, port);
-			}
+			//if (std::string(ipBuffer) == "" && std::string(portBuffer) != "")
+			//{
+			//	std::cout << "server" << std::endl;
+			//	serverTCP.TCPServer(port, ipBuffer);
+			//}
+			//else {
+			//	clientTCP.TCPClient(ipBuffer, port);
+			//}
 		}
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -607,7 +607,7 @@ void ImGuiModule::DrawTchatWindow() {
 			std::string fullMessage = "Ready to send message to " + std::string(ipBuffer) + ":" + std::string(portBuffer) + "\nMessage: " + std::string(messageBuffer);
 			messageLogs.push_back(fullMessage); // Ajouter le message à la liste des logs
 			std::cout << fullMessage << std::endl;
-			clientTCP.TCPClient(ipBuffer, port, true, fullMessage);
+			//clientTCP.TCPClient(ipBuffer, port, true, fullMessage);
 			//std::thread clientThread(&TCPServerStart::clientThreadFunction, std::ref(serverTCP.getClient()), std::ref(active));
 			memset(messageBuffer, 0, sizeof(messageBuffer));  // Effacer le buffer de message après "l'envoi"
 		}

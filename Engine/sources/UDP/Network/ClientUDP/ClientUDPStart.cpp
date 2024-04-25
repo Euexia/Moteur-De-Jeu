@@ -1,64 +1,49 @@
 #include "UDP/Network/ClientUDP/ClientUDPStart.h"
-//#include "UDP/SocketsUDP.h"
+#include "UDP/SocketsUDP.h"
 #include "UDP/ErrorsUDP.h"
 
 #include <iostream>
 #include <string>
 #include <thread>
 
-void ClientUDPStart::CreateSocketClient()
+int ClientUDPStart::ClientStartUDP()
 {
-    if (!alreadySocketCreateClient)
+    if (!Bousk::Network::Start())
     {
-        if (!Bousk::Network::Start())
-        {
-            std::cout << "Network lib initialisation error : " << Bousk::Network::ErrorsUDP::Get() << std::endl;
-        }
-
-        myFirstUdpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        if (myFirstUdpSocket == SOCKET_ERROR) {
-            std::cout << "Socket creation error : " << Bousk::Network::ErrorsUDP::Get() << std::endl;
-        }
-        alreadySocketCreateClient = true;
+        std::cout << "Network lib initialisation error : " << Bousk::Network::ErrorsUDP::Get();
+        return -1;
     }
-}
 
-void ClientUDPStart::threadClientUDP(unsigned short _port, std::string _ipAddress, std::string _data)
-{
+    SOCKET myFirstUdpSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    if (myFirstUdpSocket == SOCKET_ERROR) {
+        std::cout << "Socket creation error : " << Bousk::Network::ErrorsUDP::Get();
+        return -2;
+    }
+
+    unsigned short portDst;
+    std::cout << "Target port ? ";
+    std::cin >> portDst;
     sockaddr_in to = { 0 };
-    inet_pton(AF_INET, _ipAddress.c_str(), &to.sin_addr.s_addr);
+    inet_pton(AF_INET, "127.0.0.1", &to.sin_addr.s_addr);
     to.sin_family = AF_INET;
-    to.sin_port = htons(_port);
-    while (true)
-    {
-        std::cout << "Init du message : " << std::endl;
-        if (_data == "")
-        {
-            std::cout << "Connexion au server" << std::endl;
-        }
-        else {
-            std::cout << "SA DOIT EVOYER" << std::endl;
-            int ret = sendto(myFirstUdpSocket, _data.data(), static_cast<int>(_data.length()), 0, reinterpret_cast<const sockaddr*>(&to), sizeof(to));
-            if (ret <= 0) {
-                std::cout << "Data send error : " << Bousk::Network::ErrorsUDP::Get() << ". Closing program." << std::endl;
-            }
-        }
-    }
-}
+    to.sin_port = htons(portDst);
 
-void ClientUDPStart::ClientStartUDP(unsigned short _port, std::string _ipAddress, std::string _data)
-{
-    CreateSocketClient();
-    std::cout << "Port : " << _port << " - Address IP : " << _ipAddress.c_str() << std::endl;
-    if (myFirstUdpSocket != INVALID_SOCKET)
-    {
-        std::thread threadClientUDP(&ClientUDPStart::threadClientUDP, this, std::ref(_port), std::ref(_ipAddress), std::ref(_data));
-    }
-    else
-    {
-        std::cout << "erreur lors de la récup du socket" << std::endl;
+    std::cout << "Envoie un message : ";
+    while (true) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::string data;
+        std::getline(std::cin, data);
+        //if (data.empty())
+        //    break;
+        int ret = sendto(myFirstUdpSocket, data.data(), static_cast<int>(data.length()), 0, reinterpret_cast<const sockaddr*>(&to), sizeof(to));
+        if (ret <= 0) {
+            std::cout << "Data send error : " << Bousk::Network::ErrorsUDP::Get() << ". Closing program.";
+            break;
+        }
     }
 
-    //Bousk::Network::CloseSocket(myFirstUdpSocket);
-    //Bousk::Network::Release();
+    Bousk::Network::CloseSocket(myFirstUdpSocket);
+    Bousk::Network::Release();
+    return 0;
 }
