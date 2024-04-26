@@ -1,3 +1,3 @@
-FIX : Game
+NEW : DLL
 
-- Met en commentaire le Game
+- Création de DLL possible 

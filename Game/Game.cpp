@@ -3,18 +3,20 @@
 
 #include <iostream>
 
+#include "RedCube.h"
+#include "Windows.h"
+#include "Engine/CoreEngine.h"
+#include "Modules/ScriptModule.h"
+
 int main()
 {
-	/*Engine* engine = Engine::GetInstance();
-	engine->Initialize(_h_instance);
+	HINSTANCE__* hinst_lib = LoadLibrary(L"Engine.dll");
 
-	//engine->AddScript<RedCube>();
-	engine->AddScript<SimpleScene>();
-	engine->AddScript<Axis>();
-
-	engine->AddScript<CameraScript>();
-
-	engine->Start();*/
+	Engine* engine = Engine::GetInstance();
+	engine->Init();
+	engine->AddScript<RedCube>();
+	engine->Run();
+	FreeLibrary(hinst_lib);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

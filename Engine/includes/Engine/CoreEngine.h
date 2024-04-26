@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Modules/ModuleManager.h"
+#include "Modules/ScriptModule.h"
+#include "Script/IScript.h"
 
 #ifdef ENGINECORE_EXPORTS
 #define ENGINEDLL_API __declspec(dllexport)
@@ -15,8 +17,8 @@ enum EngineMode
 	Pause
 };
 
-//class ENGINEDLL_API Engine
-class Engine
+class ENGINEDLL_API Engine
+//class Engine
 {
 	public:
 
@@ -74,6 +76,8 @@ class Engine
 		 */
 		void EditorEngineMode() { engineMode = Editor; }
 		
+		template <typename T, class U = typename std::enable_if<std::is_base_of<IScript, T>::value, T>::type>
+		void AddScript() const;
 
 	private:
 		static Engine* instance; ///< Instance unique de la classe Engine.
@@ -81,3 +85,8 @@ class Engine
 		bool shouldQuit = false; ///< Indique si le moteur devrait quitter.
 		EngineMode engineMode = Editor; ///< Mode actuel du moteur.
 };
+template <typename T, class U>
+void Engine::AddScript() const
+{
+	moduleManager->GetModule<ScriptModule>()->AddScript<U>();
+}

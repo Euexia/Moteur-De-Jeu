@@ -27,8 +27,8 @@
   * Les scripts peuvent être initialisés, démarrés, mis à jour et détruits.
   * Ils peuvent également avoir un nom et un type par défaut.
   */
-//class ENGINEDLL_API IScript
-class  IScript
+class ENGINEDLL_API IScript
+//class  IScript
 {
 public:
     /**

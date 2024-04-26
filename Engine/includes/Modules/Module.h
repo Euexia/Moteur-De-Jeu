@@ -14,8 +14,8 @@ class ModuleManager;
  * Cette classe représente un module de l'application.
  * Les modules peuvent être initialisés, démarrés, mis à jour et libérés de manière contrôlée par le ModuleManager.
  */
-//class ENGINEDLL_API Module
-class  Module
+class ENGINEDLL_API Module
+//class  Module
 {
 	friend class ModuleManager;
 

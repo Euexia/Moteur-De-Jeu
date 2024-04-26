@@ -40,8 +40,8 @@ struct PointLightComponent;
  * Cette classe représente un objet générique dans le jeu. Un objet peut être un cube, un plan, une lumière, etc.
  * Elle sert de base pour d'autres types d'objets spécifiques.
  */
-//class ENGINEDLL_API GameObject
-class  GameObject
+class ENGINEDLL_API GameObject
+//class  GameObject
 {
 	public:
 		using id_t = unsigned int;

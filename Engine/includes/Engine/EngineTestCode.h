@@ -5,8 +5,8 @@
 #define ENGINEDLL_API __declspec(dllimport)
 #endif
 
-//class ENGINEDLL_API EngineTestCode
-class  EngineTestCode
+class ENGINEDLL_API EngineTestCode
+//class  EngineTestCode
 {
 	public:
 		void TestCode();

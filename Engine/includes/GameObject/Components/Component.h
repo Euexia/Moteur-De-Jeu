@@ -16,8 +16,8 @@ class GameObject;
  * Les composants sont des entités modulaires qui ajoutent des fonctionnalités spécifiques
  * à un GameObject, telles que la transformation, la physique, le rendu, etc.
  */
-//class ENGINEDLL_API Component
-class  Component
+class ENGINEDLL_API Component
+//class  Component
 {
 	public:
 		Component() = default;

@@ -6,13 +6,18 @@
 
 #include "Module.h"
 #include "Script/IScript.h"
+#ifdef ENGINECORE_EXPORTS
+#define ENGINEDLL_API __declspec(dllexport)
+#else
+#define ENGINEDLL_API __declspec(dllimport)
+#endif
 
 /**
  * @brief Classe ScriptModule.
  *
  * Cette classe gère l'ajout, le démarrage et la mise à jour des scripts dans le moteur de jeu.
  */
-class ScriptModule : public Module {
+class ENGINEDLL_API ScriptModule : public Module {
 public:
     /**
      * @brief Constructeur par défaut.

@@ -2,6 +2,7 @@
 
 #include "Modules/ImGUIModule.h"
 #include "Modules/RHIVulkanModule.h"
+#include "Modules/ScriptModule.h"
 #include "Modules/TimeModule.h"
 #include "Modules/WindowModule.h"
 #include "Scene/SceneManager.h"
@@ -19,6 +20,7 @@ void ModuleManager::CreateDefaultModules()
 	CreateModule<RHIVulkanModule>();
 	CreateModule<TimeModule>();
 	CreateModule<ImGuiModule>();
+	CreateModule<ScriptModule>();
 }
 
 void ModuleManager::Init() const
