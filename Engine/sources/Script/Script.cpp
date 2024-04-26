@@ -8,6 +8,7 @@ Script::Script()
 	windowModuleReference = Engine::GetInstance()->GetModuleManager()->GetModule<WindowModule>();
 	renderInterfaceModuleReference = Engine::GetInstance()->GetModuleManager()->GetModule<RHIModule>();
 	inputModuleReference = Engine::GetInstance()->GetModuleManager()->GetModule<InputModule>();
+	sceneManagerReference = Engine::GetInstance()->GetModuleManager()->GetModule<SceneManager>();
 }
 
 TimeModule* Script::GetTimeModule() const
@@ -29,4 +30,9 @@ RHIModule* Script::GetRenderInterfaceModule() const
 InputModule* Script::GetInputModule() const
 {
 	return inputModuleReference;
+}
+
+SceneManager* Script::GetSceneManager() const
+{
+	return sceneManagerReference;
 }

@@ -8,7 +8,7 @@
 
 #include "Component.h"
 
-class Transform final : public Component
+class ENGINEDLL_API Transform final : public Component
 {
 	public:
 		Transform() = default;

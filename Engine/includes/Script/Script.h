@@ -51,10 +51,13 @@ public:
      */
     InputModule* GetInputModule() const;
 
+    SceneManager* GetSceneManager() const;
+
 private:
 
     TimeModule* timeModuleReference = nullptr; /**< Référence au module de gestion du temps. */
     WindowModule* windowModuleReference = nullptr; /**< Référence au module de fenêtre. */
     RHIModule* renderInterfaceModuleReference = nullptr; /**< Référence au module d'interface de rendu. */
     InputModule* inputModuleReference = nullptr; /**< Référence au module d'entrée. */
+    SceneManager* sceneManagerReference = nullptr; /**< Référence au module de scène. */
 };

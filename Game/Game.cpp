@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "RedCube.h"
+#include "ColorCube.h"
 #include "Windows.h"
 #include "Engine/CoreEngine.h"
 #include "Modules/ScriptModule.h"
@@ -14,7 +14,7 @@ int main()
 
 	Engine* engine = Engine::GetInstance();
 	engine->Init();
-	engine->AddScript<RedCube>();
+	engine->AddScript<ColorCube>();
 	engine->Run();
 	FreeLibrary(hinst_lib);
 }

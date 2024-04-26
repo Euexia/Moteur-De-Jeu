@@ -18,12 +18,12 @@
     <ClCompile Include="Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RedCube.cpp">
+    <ClCompile Include="ColorCube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RedCube.h">
+    <ClInclude Include="ColorCube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
