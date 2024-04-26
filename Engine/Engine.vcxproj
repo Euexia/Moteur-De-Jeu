@@ -478,9 +478,11 @@ xcopy /E /I /Y "$(ProjectDir)Textures" "$(TargetDir)Textures"</Command>
     <ClCompile Include="..\Librairies\imgui\imgui_impl_vulkan.cpp" />
     <ClCompile Include="..\Librairies\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\Librairies\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="includes\Script\Script.h" />
     <ClCompile Include="sources\GameObject\PreGameObject\VaseGameObject.cpp" />
-    <ClCompile Include="sources\Script\GameObjectScript.cpp" />
+    <ClCompile Include="sources\GameObject\PreGameObject\NoobGameObject.cpp" />
+    <ClCompile Include="sources\GameObject\PreGameObject\GirlGameObject.cpp" />
+    <ClCompile Include="includes\Script.h" />
+    <ClCompile Include="sources\GameObjectScript.cpp" />
     <ClCompile Include="sources\Modules\ScriptModule.cpp" />
     <ClCompile Include="sources\Script\Script.cpp" />
     <ClCompile Include="sources\UDP\ErrorsUDP.cpp" />
@@ -554,6 +556,19 @@ xcopy /E /I /Y "$(ProjectDir)Textures" "$(TargetDir)Textures"</Command>
     <ClInclude Include="includes\GameObject\PreGameObject\VaseGameObject.h" />
     <ClInclude Include="includes\Script\GameObjectScript.h" />
     <ClInclude Include="includes\Script\IScript.h" />
+    <ClCompile Include="sources\GameObject\PreGameObject\SphereGameObject.cpp" />
+    <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="sources\UDP\Utils\Utils.cpp" />
+    <ClCompile Include="sources\UDP\Test\Utils_Test.cpp" />
+    <ClCompile Include="sources\UDP\Protocol\UnreliableOrdered.cpp" />
+    <ClCompile Include="sources\GameObject\PreGameObject\VaseGameObject.cpp" />
+    <ClCompile Include="sources\GameObject\PreGameObject\MultipleGameObject.cpp" />
+    <ClCompile Include="VulkanHooks.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="includes\GameObject\PreGameObject\GirlGameObject.h" />
+    <ClInclude Include="includes\GameObjectScript.h" />
+    <ClInclude Include="includes\IScript.h" />
     <ClInclude Include="includes\Modules\ScriptModule.h" />
     <ClInclude Include="includes\UDP\ErrorsUDP.h" />
     <ClInclude Include="includes\UDP\Float.h" />
@@ -627,6 +642,8 @@ xcopy /E /I /Y "$(ProjectDir)Textures" "$(TargetDir)Textures"</Command>
     <ClInclude Include="includes\LveEngine\lve_texture.h" />
     <ClInclude Include="includes\GameObject\Components\Mesh.h" />
     <ClInclude Include="includes\Modules\rhi.h" />
+    <ClInclude Include="includes\GameObject\PreGameObject\NoobGameObject.h" />
+    <ClInclude Include="rhi.h" />
     <ClInclude Include="includes\Modules\RHIVulkanModule.h" />
     <ClInclude Include="includes\GameObject\Components\RigidBody.h" />
     <ClInclude Include="includes\TCP\Server\Server.h" />
@@ -645,6 +662,14 @@ xcopy /E /I /Y "$(ProjectDir)Textures" "$(TargetDir)Textures"</Command>
     <ClInclude Include="includes\UDP\Utils\Utils.h" />
     <ClInclude Include="includes\UDP\Test\Utils_Test.h" />
     <ClInclude Include="includes\UDP\Protocol\UnreliableOrdered.h" />
+    <ClInclude Include="includes\GameObject\PreGameObject\SphereGameObject.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="includes\UDP\Utils\Utils.h" />
+    <ClInclude Include="includes\UDP\Test\Utils_Test.h" />
+    <ClInclude Include="includes\UDP\Protocol\UnreliableOrdered.h" />
+    <ClInclude Include="includes\GameObject\PreGameObject\VaseGameObject.h" />
+    <ClInclude Include="includes\GameObject\PreGameObject\MultipleGameObject.h" />
+    <ClInclude Include="VulkanHooks.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\GameObject\GameObject.h" />
